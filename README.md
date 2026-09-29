@@ -28,6 +28,10 @@ pnpm db:migrate             # хүснэгтүүдийг үүсгэнэ
 pnpm dev                    # http://localhost:3000
 ```
 
+## Deploy
+
+Production нь **Supabase** (PostgreSQL) болон **Vercel** (веб) дээр ажиллана. Заавар: [docs/DEPLOY.md](docs/DEPLOY.md)
+
 ## Командууд
 
 | Команд | Үйлдэл |
@@ -37,4 +41,5 @@ pnpm dev                    # http://localhost:3000
 | `pnpm typecheck` | TypeScript шалгалт |
 | `pnpm db:generate` | Prisma client үүсгэх |
 | `pnpm db:migrate` | Схемийн өөрчлөлтийг migration болгох |
+| `pnpm db:deploy` | Migration-уудыг Supabase (production) руу хэрэгжүүлэх |
 | `pnpm db:studio` | Мэдээллийн санг браузераар харах |

@@ -9,6 +9,11 @@ Sankhuu нь Facebook худалдагчдад зориулсан захиалг
 - `packages/db`: Prisma 7 (`prisma-client` generator, `@prisma/adapter-pg`). Client-ийг `packages/db/src/generated/`-д үүсгэдэг бөгөөд git-д ордоггүй.
 - `apps/web`: Next.js 16 App Router. `@sankhuu/db`-ээс `prisma` болон төрлүүдийг импортлоно.
 
+## Deploy
+- Supabase (Postgres) + Vercel (Root Directory: `apps/web`). docs/DEPLOY.md
+- `DATABASE_URL` нь Supabase transaction pooler (6543) бөгөөд апп ажиллах үед хэрэглэгдэнэ. `DIRECT_URL` нь session pooler (5432) бөгөөд migration-д хэрэглэгдэнэ.
+- `packages/db`-ийн `postinstall` нь Prisma client-ийг үүсгэнэ (Vercel build-д хэрэгтэй).
+
 ## Командууд
 - `pnpm install`
 - `pnpm db:generate`: схем өөрчилсний дараа заавал ажиллуулна
@@ -21,3 +26,5 @@ Sankhuu нь Facebook худалдагчдад зориулсан захиалг
 - Захиалгын мөрөнд (`OrderItem`) барааны нэр, үнийг захиалах үеийнхээр хадгална.
 - Хүргэлтийн статус өөрчлөгдөх бүрт `DeliveryEvent` бичнэ.
 - Нэвтрэлт утасны дугаар + SMS OTP-оор хийгдэнэ (`OtpCode`). Кодыг hash хэлбэрээр хадгална.
+- Шинэ хүснэгт нэмэх бүрт migration SQL-ийн төгсгөлд `ALTER TABLE "..." ENABLE ROW LEVEL SECURITY;` нэмнэ (Supabase Data API-аас хаах).
+- Мэдээллийн сантай зөвхөн серверээс (Server Component / Server Action / Route Handler) Prisma-аар холбогдоно. Supabase anon key-ээр хүснэгт рүү хандахгүй.
