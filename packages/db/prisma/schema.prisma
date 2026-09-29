@@ -1,0 +1,338 @@
+// Sankhuu: Facebook худалдагчдад зориулсан захиалга + хүргэлтийн систем (1-р шат)
+// Мөнгөн дүнг бүхэлд нь төгрөгөөр (Int) хадгална.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Хэрэглэгч ба нэвтрэлт ──────────────────────────────────────────
+
+enum Role {
+  SELLER // Дэлгүүрийн эзэн / ажилтан
+  DRIVER // Манай жолооч
+  ADMIN // Sankhuu-гийн ажилтан (диспетчер)
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique // Нэвтрэлт утасны дугаар + SMS кодоор
+  name      String?
+  role      Role     @default(SELLER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shops  ShopMember[]
+  driver Driver?
+}
+
+model OtpCode {
+  id        String    @id @default(cuid())
+  phone     String
+  codeHash  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  @@index([phone, createdAt])
+}
+
+// ─── Дэлгүүр ─────────────────────────────────────────────────────────
+
+model Shop {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  phone           String
+  facebookPageUrl String?
+  facebookPageId  String?  @unique // Дараа нь Graph API холболтод
+  logoUrl         String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Жолооч барааг хаанаас авах вэ
+  pickupAddressId String?  @unique
+  pickupAddress   Address? @relation("ShopPickup", fields: [pickupAddressId], references: [id])
+
+  members     ShopMember[]
+  products    Product[]
+  customers   Customer[]
+  orders      Order[]
+  settlements Settlement[]
+}
+
+enum ShopRole {
+  OWNER
+  STAFF
+}
+
+model ShopMember {
+  id     String   @id @default(cuid())
+  shopId String
+  userId String
+  role   ShopRole @default(STAFF)
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([shopId, userId])
+}
+
+// ─── Бараа ───────────────────────────────────────────────────────────
+
+model Product {
+  id              String   @id @default(cuid())
+  shopId          String
+  name            String
+  description     String?
+  price           Int // төгрөг
+  stock           Int      @default(0)
+  sku             String?
+  images          String[]
+  facebookPostUrl String? // Барааг FB пост линкээр оруулсан бол
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  shop       Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@unique([shopId, sku])
+  @@index([shopId, isActive])
+}
+
+// ─── Худалдан авагч ба хаяг ─────────────────────────────────────────
+
+// Худалдан авагч нь дэлгүүр тус бүрт тусдаа (1-р шатанд апп-д бүртгэлгүй)
+model Customer {
+  id           String   @id @default(cuid())
+  shopId       String
+  name         String
+  phone        String
+  facebookName String?
+  note         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  shop      Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  addresses Address[]
+  orders    Order[]
+
+  @@unique([shopId, phone])
+}
+
+// Монголд гудамжны хаяг тодорхой биш тул газрын зургийн цэг + тайлбар хадгална
+model Address {
+  id         String   @id @default(cuid())
+  customerId String?
+  district   String // Дүүрэг / аймаг
+  khoroo     String? // Хороо / сум
+  details    String // Байр, орц, давхар, тоот, тэмдэг
+  lat        Float?
+  lng        Float?
+  createdAt  DateTime @default(now())
+
+  customer   Customer?  @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  shopPickup Shop?      @relation("ShopPickup")
+  pickups    Delivery[] @relation("DeliveryPickup")
+  dropoffs   Delivery[] @relation("DeliveryDropoff")
+}
+
+// ─── Захиалга ────────────────────────────────────────────────────────
+
+enum OrderSource {
+  FACEBOOK_MESSENGER
+  FACEBOOK_COMMENT
+  INSTAGRAM
+  PHONE
+  OTHER
+}
+
+enum OrderStatus {
+  NEW // Худалдагч бүртгэсэн
+  CONFIRMED // Худалдан авагчтай баталгаажуулсан
+  READY_FOR_PICKUP // Савлаад жолооч хүлээж байна
+  IN_DELIVERY
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+enum PaymentMethod {
+  CASH_ON_DELIVERY // Жолооч бэлнээр / дансаар хүлээн авна
+  PREPAID_TRANSFER // Худалдагчийн данс руу урьдчилж шилжүүлсэн
+  QPAY
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+}
+
+model Order {
+  id            String        @id @default(cuid())
+  number        Int           @unique @default(autoincrement()) // Хүнд харагдах дугаар
+  shopId        String
+  customerId    String
+  source        OrderSource   @default(FACEBOOK_MESSENGER)
+  status        OrderStatus   @default(NEW)
+  subtotal      Int // Барааны нийт үнэ
+  deliveryFee   Int           @default(0) // Худалдан авагчаас авах хүргэлтийн төлбөр
+  total         Int
+  paymentMethod PaymentMethod @default(CASH_ON_DELIVERY)
+  paymentStatus PaymentStatus @default(UNPAID)
+  note          String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  shop     Shop        @relation(fields: [shopId], references: [id])
+  customer Customer    @relation(fields: [customerId], references: [id])
+  items    OrderItem[]
+  delivery Delivery?
+
+  @@index([shopId, status])
+  @@index([shopId, createdAt])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String?
+  name      String // Захиалах үеийн нэр, үнийг хадгална
+  unitPrice Int
+  quantity  Int
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+}
+
+// ─── Хүргэлт (өөрийн жолооч) ────────────────────────────────────────
+
+enum VehicleType {
+  CAR
+  MOTORBIKE
+  BICYCLE
+  ON_FOOT
+}
+
+model Driver {
+  id          String      @id @default(cuid())
+  userId      String      @unique
+  vehicleType VehicleType @default(CAR)
+  plateNumber String?
+  isOnline    Boolean     @default(false)
+  lastLat     Float?
+  lastLng     Float?
+  lastSeenAt  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveries    Delivery[]
+  cashHandovers CashHandover[]
+}
+
+enum DeliveryStatus {
+  PENDING // Жолооч хуваарилаагүй
+  ASSIGNED
+  PICKED_UP // Худалдагчаас авсан
+  DELIVERED
+  FAILED // Хүлээн авагч олдоогүй, татгалзсан г.м.
+  RETURNED_TO_SHOP
+  CANCELLED
+}
+
+model Delivery {
+  id               String         @id @default(cuid())
+  orderId          String         @unique
+  driverId         String?
+  status           DeliveryStatus @default(PENDING)
+  pickupAddressId  String
+  dropoffAddressId String
+  fee              Int // Sankhuu-гийн авах хүргэлтийн хөлс
+  codAmount        Int            @default(0) // Жолоочийн худалдан авагчаас цуглуулах дүн
+  codCollected     Int            @default(0)
+  scheduledFor     DateTime?
+  assignedAt       DateTime?
+  pickedUpAt       DateTime?
+  deliveredAt      DateTime?
+  failReason       String?
+  proofPhotoUrl    String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  driver         Driver?         @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  pickupAddress  Address         @relation("DeliveryPickup", fields: [pickupAddressId], references: [id])
+  dropoffAddress Address         @relation("DeliveryDropoff", fields: [dropoffAddressId], references: [id])
+  events         DeliveryEvent[]
+  cashHandover   CashHandover?   @relation(fields: [cashHandoverId], references: [id])
+  cashHandoverId String?
+  settlement     Settlement?     @relation(fields: [settlementId], references: [id])
+  settlementId   String?
+
+  @@index([driverId, status])
+  @@index([status, scheduledFor])
+}
+
+// Статусын түүх (хэн, хэзээ, юу өөрчилсөн)
+model DeliveryEvent {
+  id         String         @id @default(cuid())
+  deliveryId String
+  status     DeliveryStatus
+  note       String?
+  lat        Float?
+  lng        Float?
+  actorId    String? // User.id
+  createdAt  DateTime       @default(now())
+
+  delivery Delivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+
+  @@index([deliveryId, createdAt])
+}
+
+// ─── Мөнгөн тооцоо ──────────────────────────────────────────────────
+
+// Жолооч цуглуулсан бэлэн мөнгөө оффис руу тушаах
+model CashHandover {
+  id         String   @id @default(cuid())
+  driverId   String
+  amount     Int
+  receivedBy String? // Хүлээн авсан админы User.id
+  createdAt  DateTime @default(now())
+
+  driver     Driver     @relation(fields: [driverId], references: [id])
+  deliveries Delivery[]
+}
+
+enum SettlementStatus {
+  PENDING
+  PAID
+}
+
+// Худалдагчид шилжүүлэх дүн = цуглуулсан COD − хүргэлтийн хөлс
+model Settlement {
+  id          String           @id @default(cuid())
+  shopId      String
+  periodStart DateTime
+  periodEnd   DateTime
+  codTotal    Int
+  feeTotal    Int
+  payout      Int
+  status      SettlementStatus @default(PENDING)
+  paidAt      DateTime?
+  createdAt   DateTime         @default(now())
+
+  shop       Shop       @relation(fields: [shopId], references: [id])
+  deliveries Delivery[]
+
+  @@index([shopId, status])
+}
