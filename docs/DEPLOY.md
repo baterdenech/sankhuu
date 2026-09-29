@@ -39,7 +39,7 @@
 3. **Environment Variables** хэсэгт нэмнэ:
    - `DATABASE_URL`: Transaction pooler URL (порт 6543)
    - `NEXT_PUBLIC_SUPABASE_URL`: `https://[PROJECT_REF].supabase.co`
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Publishable key (эсвэл anon key)
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Publishable key, эсвэл оронд нь `NEXT_PUBLIC_SUPABASE_ANON_KEY` (anon key)
 4. **Deploy** дарна.
 
 5. **Домэйн (`erp.flexlink.mn`):** Нэг домэйн нэг л Vercel project-д холбогдож чадна. DNS аль хэдийн Vercel рүү заасан тул DNS-д хүрэх шаардлагагүй.
