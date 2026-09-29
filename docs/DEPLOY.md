@@ -27,7 +27,7 @@
 3. **Туршилтад:** мөн тэр Phone тохиргооны **Test Phone Numbers and OTPs** хэсэгт жишээ нь `97699112233=123456` гэж нэмнэ.
    Тэр дугаар руу жинхэнэ SMS явахгүй бөгөөд `123456` кодоор нэвтэрнэ.
    Энэ тохиргоог production-д устгахаа мартуузай.
-4. **Authentication → URL Configuration → Site URL**-д Vercel-ийн хаягаа (жишээ нь `https://sankhuu.vercel.app`) бичнэ.
+4. **Authentication → URL Configuration → Site URL**-д `https://erp.flexlink.mn` гэж бичнэ.
 5. **Project Settings → API Keys** хэсгээс Project URL болон **Publishable key**-ийг хуулж авна.
 
 ## 3. Vercel (веб апп)
@@ -41,6 +41,10 @@
    - `NEXT_PUBLIC_SUPABASE_URL`: `https://[PROJECT_REF].supabase.co`
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Publishable key (эсвэл anon key)
 4. **Deploy** дарна.
+
+5. **Домэйн (`erp.flexlink.mn`):** Нэг домэйн нэг л Vercel project-д холбогдож чадна. DNS аль хэдийн Vercel рүү заасан тул DNS-д хүрэх шаардлагагүй.
+   - Хуучин project → **Settings → Domains** → `erp.flexlink.mn` → **Remove** дарна. Project өөрөө устахгүй.
+   - `sankhuu` project → **Settings → Domains** → **Add** дарж `erp.flexlink.mn`-г нэмнэ. Хэдэн минутын дотор SSL-тэй ажиллаж эхэлнэ.
 
 Үүний дараа:
 - `main` branch руу push хийх бүрт production автоматаар шинэчлэгдэнэ.
