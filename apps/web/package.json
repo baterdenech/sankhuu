@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@sankhuu/db": "workspace:*",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.117.2",
     "next": "^16.3.7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

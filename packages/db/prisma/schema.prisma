@@ -18,9 +18,11 @@ enum Role {
   ADMIN // Sankhuu-гийн ажилтан (диспетчер)
 }
 
+// Нэвтрэлтийг Supabase Auth (утас + SMS код) хариуцна.
+// User.id нь Supabase-ийн auth.users.id (UUID)-тай ижил: апп-д анх нэвтрэхэд үүснэ.
 model User {
-  id        String   @id @default(cuid())
-  phone     String   @unique // Нэвтрэлт утасны дугаар + SMS кодоор
+  id        String   @id
+  phone     String   @unique // E.164 хэлбэрээр: +97699112233
   name      String?
   role      Role     @default(SELLER)
   isActive  Boolean  @default(true)
@@ -29,18 +31,6 @@ model User {
 
   shops  ShopMember[]
   driver Driver?
-}
-
-model OtpCode {
-  id        String    @id @default(cuid())
-  phone     String
-  codeHash  String
-  expiresAt DateTime
-  usedAt    DateTime?
-  attempts  Int       @default(0)
-  createdAt DateTime  @default(now())
-
-  @@index([phone, createdAt])
 }
 
 // ─── Дэлгүүр ─────────────────────────────────────────────────────────

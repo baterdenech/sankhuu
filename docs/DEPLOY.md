@@ -11,14 +11,26 @@
    `[YOUR-PASSWORD]`-ийн оронд 1-р алхамд үүсгэсэн нууц үгээ бичнэ.
 3. Хүснэгтүүдийг үүсгэнэ. Доорх хоёр аргын аль нэгийг сонгоно:
    - **Компьютерээсээ:** `.env` файлд хоёр URL-аа бичээд `pnpm install && pnpm db:deploy`
-   - **Компьютергүйгээр:** Supabase → **SQL Editor** руу `packages/db/prisma/migrations/0_init/migration.sql`-ийн агуулгыг хуулж буулгаад **Run** дарна.
-     Энэ аргаар хийсэн бол дараа нь компьютерээсээ нэг удаа
-     `pnpm --filter @sankhuu/db exec prisma migrate resolve --applied 0_init` ажиллуулна. Ингэснээр Prisma энэ migration-ыг хийгдсэн гэж тэмдэглэнэ.
+   - **Компьютергүйгээр:** Supabase → **SQL Editor** руу `packages/db/prisma/migrations/` доторх хавтас бүрийн
+     `migration.sql`-ийг **дарааллаар нь** (`0_init`, `1_supabase_auth`, …) хуулж буулгаад **Run** дарна.
+     Энэ аргаар хийсэн бол дараа нь компьютерээсээ migration бүрийг хийгдсэн гэж тэмдэглэнэ:
+     `pnpm --filter @sankhuu/db exec prisma migrate resolve --applied 0_init` (бусад migration-д мөн адил)
 
 > Migration бүх хүснэгтэд **RLS** идэвхжүүлдэг. Ингэснээр Supabase-ийн нээлттэй API (anon key)-аар
 > худалдан авагчийн утас, хаяг зэрэг мэдээлэл харагдахгүй. Апп мэдээллийн сантай зөвхөн серверээс Prisma-аар холбогдоно.
 
-## 2. Vercel (веб апп)
+## 2. Supabase Auth (утсаар нэвтрэх)
+
+1. **Authentication → Sign In / Providers → Phone** хэсгийг идэвхжүүлнэ.
+2. SMS илгээх үйлчилгээ сонгоно: Twilio, Twilio Verify, MessageBird, Vonage эсвэл Textlocal.
+   Монголын дугаар руу илгээх үнийг тухайн үйлчилгээн дээр шалгаарай.
+3. **Туршилтад:** мөн тэр Phone тохиргооны **Test Phone Numbers and OTPs** хэсэгт жишээ нь `97699112233=123456` гэж нэмнэ.
+   Тэр дугаар руу жинхэнэ SMS явахгүй бөгөөд `123456` кодоор нэвтэрнэ.
+   Энэ тохиргоог production-д устгахаа мартуузай.
+4. **Authentication → URL Configuration → Site URL**-д Vercel-ийн хаягаа (жишээ нь `https://sankhuu.vercel.app`) бичнэ.
+5. **Project Settings → API Keys** хэсгээс Project URL болон **Publishable key**-ийг хуулж авна.
+
+## 3. Vercel (веб апп)
 
 1. [vercel.com/new](https://vercel.com/new) → GitHub-аас `sankhuu` repo-г **Import** хийнэ.
 2. Тохиргоо:
@@ -26,6 +38,8 @@
    - Framework: Next.js (автоматаар танина), Install/Build командыг өөрчлөхгүй.
 3. **Environment Variables** хэсэгт нэмнэ:
    - `DATABASE_URL`: Transaction pooler URL (порт 6543)
+   - `NEXT_PUBLIC_SUPABASE_URL`: `https://[PROJECT_REF].supabase.co`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Publishable key (эсвэл anon key)
 4. **Deploy** дарна.
 
 Үүний дараа:

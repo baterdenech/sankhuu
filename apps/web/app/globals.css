@@ -45,3 +45,31 @@ h1 { margin: 0 0 20px; font-size: 22px; }
   .sidebar { width: auto; border-right: 0; border-bottom: 1px solid var(--border); }
   .sidebar nav { display: flex; flex-wrap: wrap; gap: 4px; }
 }
+
+/* Нэвтрэлт */
+.sidebar { display: flex; flex-direction: column; }
+.sidebar nav { flex: 1; }
+.account { border-top: 1px solid var(--border); padding: 12px 8px 0; font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.link-button { background: none; border: 0; padding: 0; color: var(--muted); cursor: pointer; font: inherit; }
+.link-button:hover { color: var(--text); }
+.auth-page { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+.auth-card { width: 100%; max-width: 380px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 24px; }
+.auth-card .brand { font-weight: 700; font-size: 20px; color: var(--accent); margin-bottom: 20px; }
+.auth-card h1 { margin-bottom: 8px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; margin-top: 16px; }
+.small a { text-decoration: underline; }
+.form { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.form label { font-size: 14px; font-weight: 500; }
+.form input { font: inherit; font-size: 16px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); width: 100%; }
+.form input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.phone-input { display: flex; align-items: stretch; }
+.phone-input span { display: flex; align-items: center; padding: 0 10px; border: 1px solid var(--border); border-right: 0; border-radius: 8px 0 0 8px; color: var(--muted); }
+.phone-input input { border-radius: 0 8px 8px 0; }
+.code-input { letter-spacing: 6px; font-size: 22px !important; text-align: center; }
+.form button { margin-top: 8px; font: inherit; font-weight: 600; padding: 11px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; }
+.form button:disabled { opacity: 0.6; cursor: default; }
+.form-error { color: #dc2626; font-size: 14px; margin: 0; }
+@media (max-width: 720px) {
+  .account { border-top: 0; padding: 8px; }
+}

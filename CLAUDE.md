@@ -25,6 +25,8 @@ Sankhuu нь Facebook худалдагчдад зориулсан захиалг
 - UI текст монгол хэлээр (кирилл) бичигдэнэ. Enum-ийн монгол нэр `apps/web/lib/labels.ts`-д байна.
 - Захиалгын мөрөнд (`OrderItem`) барааны нэр, үнийг захиалах үеийнхээр хадгална.
 - Хүргэлтийн статус өөрчлөгдөх бүрт `DeliveryEvent` бичнэ.
-- Нэвтрэлт утасны дугаар + SMS OTP-оор хийгдэнэ (`OtpCode`). Кодыг hash хэлбэрээр хадгална.
+- Нэвтрэлтийг Supabase Auth (утас + SMS OTP) хариуцна. `User.id` = Supabase `auth.users.id`, утсыг E.164 (`+976…`) хэлбэрээр хадгална (`apps/web/lib/phone.ts`).
+- Хуудас / Server Action-д хэрэглэгчийг `requireUser()` (`apps/web/lib/auth.ts`)-ээр авна. `apps/web/proxy.ts` session-ийг шинэчилж, нэвтрээгүй бол `/login` руу шилжүүлнэ.
+- Хамгаалагдсан хуудсууд `app/(dashboard)/` дотор байрлана.
 - Шинэ хүснэгт нэмэх бүрт migration SQL-ийн төгсгөлд `ALTER TABLE "..." ENABLE ROW LEVEL SECURITY;` нэмнэ (Supabase Data API-аас хаах).
 - Мэдээллийн сантай зөвхөн серверээс (Server Component / Server Action / Route Handler) Prisma-аар холбогдоно. Supabase anon key-ээр хүснэгт рүү хандахгүй.
