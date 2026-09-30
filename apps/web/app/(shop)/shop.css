@@ -510,6 +510,19 @@
 .install-close { border: 0; background: none; color: var(--ink-3); font-size: 22px; line-height: 1; cursor: pointer; padding: 4px; }
 .install-bar ~ .ai-fab { bottom: calc(var(--bnav-h) + var(--safe-b) + 84px); }
 
+/* ── Барааны хувилбар (размер, өнгө): сонгох товчнууд (барааны хуудас), сагсны мөрийн нэр ── */
+.variant-pick { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; }
+.variant-pick-label { font-size: 14px; color: var(--ink-2); display: flex; gap: 6px; align-items: baseline; }
+.variant-pick-label b { color: var(--ink); }
+.variant-pick-label em { font-style: normal; color: var(--brand); font-weight: 600; }
+.variant-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.variant-btn { display: inline-flex; flex-direction: column; align-items: center; gap: 1px; min-width: 48px; padding: 8px 14px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.variant-btn small { font-size: 11px; font-weight: 500; color: var(--ink-3); }
+.variant-btn.on { border-color: var(--brand); color: var(--brand-dark); background: var(--brand-soft); }
+.variant-btn.on small { color: var(--brand-dark); }
+.variant-btn.out { color: var(--ink-3); text-decoration: line-through; background: var(--canvas); cursor: default; }
+.cart-line-variant { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 4px; background: var(--canvas); color: var(--ink-2); font-size: 11px; font-weight: 600; vertical-align: middle; }
+
 /* Сагсны хаягийн форм дотор газрын зургийн товчнууд самбарын `.form button` дүрмээс ангид (улбар шар биш) */
 .app .cart-group.form .locpick-open { margin: 0; padding: 11px 12px; border: 1px dashed var(--line); border-radius: 10px; background: var(--canvas); color: var(--ink-2); font-weight: 500; font-size: 14px; text-align: left; box-shadow: none; }
 .app .cart-group.form .locpick-btn { margin: 0; padding: 7px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); font-weight: 600; font-size: 13px; box-shadow: none; }

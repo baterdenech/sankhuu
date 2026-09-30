@@ -112,7 +112,11 @@ export async function searchProducts(input: z.infer<typeof SearchInput>, ctx: As
 async function getProduct(productId: string, ctx: AssistantContext) {
   const p = await prisma.product.findFirst({
     where: { id: productId, ...publicWhere, ...(ctx.shopSlug ? { shop: { slug: ctx.shopSlug, isActive: true } } : {}) },
-    include: { shop: { select: { slug: true, name: true, pickupAddress: { select: { district: true } } } }, reviews: { orderBy: { createdAt: "desc" }, take: 5, select: { rating: true, comment: true } } },
+    include: {
+      shop: { select: { slug: true, name: true, pickupAddress: { select: { district: true } } } },
+      reviews: { orderBy: { createdAt: "desc" }, take: 5, select: { rating: true, comment: true } },
+      variants: { orderBy: { sortOrder: "asc" }, select: { name: true, price: true, stock: true } },
+    },
   });
   if (!p) return null;
   return {
@@ -120,6 +124,8 @@ async function getProduct(productId: string, ctx: AssistantContext) {
     description: p.description,
     district: p.shop.pickupAddress?.district ?? null,
     reviews: p.reviews,
+    // Хувилбар (размер, өнгө): нэр, үнэ (null бол барааны үнэ), үлдэгдэл — "M размер байгаа юу" гэх мэт асуултад
+    variants: p.variants.length ? p.variants.map((v) => ({ name: v.name, price: v.price, stock: v.stock })) : undefined,
   };
 }
 
@@ -228,7 +234,7 @@ export async function* runAssistant(history: Anthropic.Beta.BetaMessageParam[], 
         const p = parsed.success ? await getProduct(parsed.data.productId, ctx) : null;
         if (p && !seen.has(p.id)) {
           seen.add(p.id);
-          const { description: _d, district: _dis, reviews: _r, ...card } = p;
+          const { description: _d, district: _dis, reviews: _r, variants: _v, ...card } = p;
           yield { t: "products", items: [card] };
         }
         results.push({

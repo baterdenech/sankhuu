@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string; id: string }> }) {
   const { slug, id } = await params;
-  const product = await prisma.product.findFirst({ where: { id, isActive: true, shop: { slug, isActive: true } }, include: { shop: { include: { pickupAddress: true } } } });
+  const product = await prisma.product.findFirst({ where: { id, isActive: true, shop: { slug, isActive: true } }, include: { shop: { include: { pickupAddress: true } }, variants: { orderBy: { sortOrder: "asc" } } } });
   if (!product) notFound();
 
   const [sold, more, reviews, shopProductCount] = await Promise.all([
@@ -105,6 +105,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="pdp-buy">
           <BuyBar
             item={{ productId: product.id, name: product.name, price: product.price, image: product.images[0] ?? null, category: product.category, maxQty: product.stock, shopId: product.shopId, shopSlug: slug, shopName: product.shop.name }}
+            variants={product.variants.map((v) => ({ id: v.id, name: v.name, price: v.price, stock: v.stock }))}
           />
         </div>
 
@@ -118,6 +119,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <>
                 <dt>Ангилал</dt>
                 <dd>{product.category}</dd>
+              </>
+            )}
+            {product.variants.length > 0 && (
+              <>
+                <dt>Хувилбар</dt>
+                <dd>{product.variants.map((v) => (v.stock > 0 ? v.name : `${v.name} (дууссан)`)).join(", ")}</dd>
               </>
             )}
             <dt>Дэлгүүр</dt>
