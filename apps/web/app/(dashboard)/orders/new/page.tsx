@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 // Утсаар / чатаар ирсэн захиалгыг худалдагч гараар бүртгэнэ
 export default async function NewOrderPage() {
   const { shop } = await requireShop();
-  const products = await prisma.product.findMany({ where: { shopId: shop.id, isActive: true }, select: { id: true, name: true, price: true, stock: true }, orderBy: [{ stock: "desc" }, { name: "asc" }] });
+  const products = await prisma.product.findMany({ where: { shopId: shop.id, isActive: true }, select: { id: true, name: true, price: true, stock: true, variants: { orderBy: { sortOrder: "asc" }, select: { id: true, name: true, price: true, stock: true } } }, orderBy: [{ stock: "desc" }, { name: "asc" }] });
   return (
     <>
       <div className="page-head">

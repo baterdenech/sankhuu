@@ -16,6 +16,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       ...(q ? { name: { contains: q, mode: "insensitive" } } : {}),
     },
     orderBy: { createdAt: "desc" },
+    include: { variants: { orderBy: { sortOrder: "asc" }, select: { id: true, name: true, stock: true } } },
   });
 
   return (
@@ -78,7 +79,18 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                   <span className="price">{formatMNT(p.price)}</span>
                   {p.category && <span className="muted small-text">{p.category}</span>}
                 </div>
-                <StockControl id={p.id} stock={p.stock} />
+                {p.variants.length ? (
+                  // Хувилбартай бараа: үлдэгдлийг хувилбар бүрээр засах хуудсанд өөрчилнө
+                  <Link href={`/products/${p.id}`} className="variant-chips" title="Хувилбар бүрийн үлдэгдэл">
+                    {p.variants.map((v) => (
+                      <span key={v.id} className={`chip small${v.stock === 0 ? " zero" : ""}`}>
+                        {v.name} <b>{v.stock}</b>
+                      </span>
+                    ))}
+                  </Link>
+                ) : (
+                  <StockControl id={p.id} stock={p.stock} />
+                )}
               </div>
             </li>
           ))}

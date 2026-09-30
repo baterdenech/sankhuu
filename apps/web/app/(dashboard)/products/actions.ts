@@ -7,6 +7,7 @@ import { requireShop } from "@/lib/shop";
 import { uploadImage } from "@/lib/storage";
 import { analyzeProductImage, type ProductDraft } from "@/lib/ai/product";
 import { PRODUCT_CATEGORIES } from "@/lib/categories";
+import { parseVariants, sumStock, syncVariants } from "@/lib/variants";
 
 export type FormState = { error?: string };
 
@@ -24,17 +25,20 @@ function readFields(fd: FormData) {
   if (name.length < 2) return { error: "Барааны нэрээ оруулна уу." } as const;
   if (!Number.isFinite(price) || price <= 0) return { error: "Үнээ төгрөгөөр оруулна уу." } as const;
   if (!Number.isFinite(stock) || stock < 0) return { error: "Үлдэгдэл 0 эсвэл түүнээс их байна." } as const;
+  const parsed = parseVariants(str(fd, "variants"));
+  if ("error" in parsed) return { error: parsed.error } as const;
   const compareRaw = str(fd, "compareAtPrice");
   const compareAtPrice = compareRaw ? int(fd, "compareAtPrice") : null;
   if (compareAtPrice !== null && (!Number.isFinite(compareAtPrice) || compareAtPrice <= price)) {
     return { error: "Хямдралын өмнөх үнэ одоогийн үнээс их байх ёстой." } as const;
   }
   return {
+    variants: parsed.variants,
     data: {
       name,
       price,
       compareAtPrice,
-      stock,
+      stock: parsed.variants.length ? sumStock(parsed.variants) : stock, // хувилбартай бол нийлбэр
       description: str(fd, "description") || null,
       category: (PRODUCT_CATEGORIES as readonly string[]).includes(category) ? category : null,
       sku: str(fd, "sku") || null,
@@ -74,7 +78,12 @@ export async function createProduct(_prev: FormState, formData: FormData): Promi
   }
 
   await prisma.product.create({
-    data: { ...fields.data, shopId: shop.id, images: imageUrl ? [imageUrl] : [] },
+    data: {
+      ...fields.data,
+      shopId: shop.id,
+      images: imageUrl ? [imageUrl] : [],
+      variants: { create: fields.variants.map((v, i) => ({ name: v.name, stock: v.stock, price: v.price, sortOrder: i })) },
+    },
   });
   revalidatePath("/products");
   revalidatePath("/dashboard");
@@ -97,7 +106,10 @@ export async function updateProduct(id: string, _prev: FormState, formData: Form
     return { error: e instanceof Error ? e.message : "Зураг хадгалж чадсангүй." };
   }
 
-  await prisma.product.update({ where: { id }, data: { ...fields.data, images } });
+  await prisma.$transaction(async (tx) => {
+    await tx.product.update({ where: { id }, data: { ...fields.data, images } });
+    await syncVariants(tx, id, fields.variants);
+  });
   revalidatePath("/products");
   redirect("/products");
 }
@@ -115,9 +127,10 @@ export async function adjustStock(id: string, delta: number) {
   const { shop } = await requireShop();
   const d = Math.trunc(delta);
   if (!Number.isFinite(d) || d === 0) return;
+  // Хувилбартай барааны үлдэгдлийг хувилбар бүрээр (засах хуудаснаас) өөрчилнө
   await prisma.$executeRaw`
     UPDATE "Product" SET "stock" = GREATEST(0, "stock" + ${d}), "updatedAt" = now()
-    WHERE "id" = ${id} AND "shopId" = ${shop.id}`;
+    WHERE "id" = ${id} AND "shopId" = ${shop.id} AND NOT EXISTS (SELECT 1 FROM "ProductVariant" v WHERE v."productId" = "Product"."id")`;
   revalidatePath("/products");
   revalidatePath("/dashboard");
 }

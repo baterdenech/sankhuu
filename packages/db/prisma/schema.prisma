@@ -101,13 +101,30 @@ model Product {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  shop       Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shop       Shop             @relation(fields: [shopId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
   reviews    Review[]
   favorites  Favorite[]
+  variants   ProductVariant[]
 
   @@unique([shopId, sku])
   @@index([shopId, isActive])
+}
+
+// Барааны хувилбар (размер, өнгө г.м.): хувилбар бүр өөрийн үлдэгдэлтэй, үнэ нь заавал биш (null бол барааны үнэ).
+// Хувилбартай барааны `Product.stock` = хувилбаруудын үлдэгдлийн нийлбэр (бичих бүрт `lib/variants.ts` тааруулна).
+model ProductVariant {
+  id        String @id @default(cuid())
+  productId String
+  name      String // "M", "L / Хар"
+  price     Int? // төгрөг; null бол барааны үнэ
+  stock     Int    @default(0)
+  sortOrder Int    @default(0)
+
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@index([productId])
 }
 
 // ─── Худалдан авагч ба хаяг ─────────────────────────────────────────
@@ -226,12 +243,14 @@ model OrderItem {
   id        String  @id @default(cuid())
   orderId   String
   productId String?
-  name      String // Захиалах үеийн нэр, үнийг хадгална
+  variantId String? // Хувилбар сонгосон бол (цуцлахад үлдэгдлийг тухайн хувилбарт буцаана)
+  name      String // Захиалах үеийн нэр ("Бараа · Хувилбар"), үнийг хадгална
   unitPrice Int
   quantity  Int
 
-  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
 }
 
 // ─── Үнэлгээ, сэтгэгдэл ──────────────────────────────────────────────

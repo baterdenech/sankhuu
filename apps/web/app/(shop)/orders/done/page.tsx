@@ -20,7 +20,7 @@ export default async function OrdersDonePage({ searchParams }: { searchParams: P
 
   return (
     <div className="done">
-      <AfterOrder orders={orders.map((o) => ({ number: o.number, phone }))} productIds={orders.flatMap((o) => o.items.map((i) => i.productId)).filter((x): x is string => Boolean(x))} />
+      <AfterOrder orders={orders.map((o) => ({ number: o.number, phone }))} lineKeys={orders.flatMap((o) => o.items.filter((i) => i.productId).map((i) => `${i.productId}:${i.variantId ?? ""}`))} />
       <div className="done-check">
         <CheckIcon size={32} />
       </div>

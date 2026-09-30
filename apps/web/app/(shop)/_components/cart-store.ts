@@ -5,6 +5,8 @@ import { useSyncExternalStore } from "react";
 // Нэг сагс, олон дэлгүүр: захиалахад дэлгүүр бүрт тусдаа захиалга үүснэ
 export type CartItem = {
   productId: string;
+  variantId?: string | null; // Хувилбар (размер, өнгө) сонгосон бол
+  variantName?: string | null;
   name: string;
   price: number;
   image: string | null;
@@ -15,6 +17,9 @@ export type CartItem = {
   shopSlug: string;
   shopName: string;
 };
+
+// Нэг бараа олон хувилбараар сагсанд байж болох тул мөрийн түлхүүр = бараа + хувилбар
+export const lineKey = (i: { productId: string; variantId?: string | null }) => `${i.productId}:${i.variantId ?? ""}`;
 
 const KEY = "sankhuu-cart";
 const listeners = new Set<() => void>();
@@ -48,21 +53,22 @@ export function useCart() {
     items,
     count: items.reduce((n, i) => n + i.qty, 0),
     subtotal: items.reduce((n, i) => n + i.qty * i.price, 0),
-    qtyOf: (productId: string) => items.find((i) => i.productId === productId)?.qty ?? 0,
+    qtyOf: (productId: string, variantId?: string | null) => items.find((i) => lineKey(i) === lineKey({ productId, variantId }))?.qty ?? 0,
     add(item: Omit<CartItem, "qty">, qty = 1) {
       const cur = read();
-      const found = cur.find((i) => i.productId === item.productId);
+      const key = lineKey(item);
+      const found = cur.find((i) => lineKey(i) === key);
       write(
         found
-          ? cur.map((i) => (i.productId === item.productId ? { ...i, ...item, qty: Math.min(item.maxQty, i.qty + qty) } : i))
+          ? cur.map((i) => (lineKey(i) === key ? { ...i, ...item, qty: Math.min(item.maxQty, i.qty + qty) } : i))
           : [...cur, { ...item, qty: Math.min(item.maxQty, qty) }],
       );
     },
-    setQty(productId: string, qty: number) {
-      write(read().map((i) => (i.productId === productId ? { ...i, qty: Math.min(i.maxQty, qty) } : i)).filter((i) => i.qty > 0));
+    setQty(key: string, qty: number) {
+      write(read().map((i) => (lineKey(i) === key ? { ...i, qty: Math.min(i.maxQty, qty) } : i)).filter((i) => i.qty > 0));
     },
-    remove(productId: string) {
-      write(read().filter((i) => i.productId !== productId));
+    remove(key: string) {
+      write(read().filter((i) => lineKey(i) !== key));
     },
     clear() {
       write([]);

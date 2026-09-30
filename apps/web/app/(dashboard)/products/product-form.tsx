@@ -6,18 +6,32 @@ import { PRODUCT_CATEGORIES } from "@/lib/categories";
 import type { ProductDraft } from "@/lib/ai/product";
 import { suggestFromImage, type FormState } from "./actions";
 import { compressImage } from "./compress-image";
+import { VariantsEditor } from "./variants-editor";
+import type { VariantInput } from "@/lib/variants";
 
 type Props = {
   action: (prev: FormState, fd: FormData) => Promise<FormState>;
   submitLabel: string;
   ai: boolean;
   product?: Product;
+  variants?: VariantInput[];
 };
 
-export function ProductForm({ action, submitLabel, ai, product }: Props) {
-  const [state, formAction, pending] = useActionState<FormState, FormData>(action, {});
+export function ProductForm({
+  action,
+  submitLabel,
+  ai,
+  product,
+  variants = [],
+}: Props) {
+  const [state, formAction, pending] = useActionState<FormState, FormData>(
+    action,
+    {},
+  );
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(product?.images[0] ?? null);
+  const [preview, setPreview] = useState<string | null>(
+    product?.images[0] ?? null,
+  );
   const [draft, setDraft] = useState<ProductDraft | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
   const [analyzing, startAnalyze] = useTransition();
@@ -26,7 +40,13 @@ export function ProductForm({ action, submitLabel, ai, product }: Props) {
   const [category, setCategory] = useState(product?.category ?? "");
   const [price, setPrice] = useState(product ? String(product.price) : "");
   const [stock, setStock] = useState(String(product?.stock ?? 1));
-  const [compareAt, setCompareAt] = useState(product?.compareAtPrice ? String(product.compareAtPrice) : "");
+  // Хувилбартай бол ерөнхий үлдэгдэл = хувилбаруудын нийлбэр (серверт мөн тооцно)
+  const [variantTotal, setVariantTotal] = useState<number | null>(
+    variants.length ? variants.reduce((s, v) => s + v.stock, 0) : null,
+  );
+  const [compareAt, setCompareAt] = useState(
+    product?.compareAtPrice ? String(product.compareAtPrice) : "",
+  );
   const [sku, setSku] = useState(product?.sku ?? "");
   const priceRef = useRef<HTMLInputElement>(null);
 
@@ -52,7 +72,8 @@ export function ProductForm({ action, submitLabel, ai, product }: Props) {
       setName((v) => v || result.name);
       setDescription((v) => v || result.description);
       setCategory((v) => v || result.category);
-      if (!price && result.suggestedPriceMnt) setPrice(String(Math.round(result.suggestedPriceMnt / 1000) * 1000));
+      if (!price && result.suggestedPriceMnt)
+        setPrice(String(Math.round(result.suggestedPriceMnt / 1000) * 1000));
       priceRef.current?.focus();
     });
   }
@@ -74,10 +95,20 @@ export function ProductForm({ action, submitLabel, ai, product }: Props) {
         ) : (
           <span className="photo-hint">
             <strong>Зураг авах эсвэл сонгох</strong>
-            {ai ? <small>Нэр, тайлбар, ангиллыг AI бөглөнө</small> : <small>JPG, PNG, WebP · 5MB хүртэл</small>}
+            {ai ? (
+              <small>Нэр, тайлбар, ангиллыг AI бөглөнө</small>
+            ) : (
+              <small>JPG, PNG, WebP · 5MB хүртэл</small>
+            )}
           </span>
         )}
-        <input type="file" name="image" accept="image/*" capture="environment" onChange={onPick} />
+        <input
+          type="file"
+          name="image"
+          accept="image/*"
+          capture="environment"
+          onChange={onPick}
+        />
         {preview && <span className="photo-change">Зураг солих</span>}
       </label>
 
@@ -88,35 +119,90 @@ export function ProductForm({ action, submitLabel, ai, product }: Props) {
       )}
       {draft && !analyzing && (
         <p className="ai-status ok">
-          ✓ AI бөглөлөө{draft.colors.length ? ` · ${draft.colors.join(", ")}` : ""}. Шалгаад засаарай.
+          ✓ AI бөглөлөө
+          {draft.colors.length ? ` · ${draft.colors.join(", ")}` : ""}. Шалгаад
+          засаарай.
         </p>
       )}
       {aiError && <p className="ai-status warn">{aiError}</p>}
 
       <label htmlFor="name">Нэр</label>
-      <input id="name" name="name" value={name} onChange={(e) => setName(e.target.value)} required maxLength={120} placeholder="Жишээ: Эмэгтэй ноосон цамц, шаргал" />
+      <input
+        id="name"
+        name="name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+        maxLength={120}
+        placeholder="Жишээ: Эмэгтэй ноосон цамц, шаргал"
+      />
 
       <div className="row">
         <div>
           <label htmlFor="price">Үнэ (₮)</label>
-          <input ref={priceRef} id="price" name="price" inputMode="numeric" value={price} onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ""))} required placeholder="0" />
+          <input
+            ref={priceRef}
+            id="price"
+            name="price"
+            inputMode="numeric"
+            value={price}
+            onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ""))}
+            required
+            placeholder="0"
+          />
         </div>
         <div>
           <label htmlFor="stock">Үлдэгдэл (ш)</label>
-          <input id="stock" name="stock" inputMode="numeric" value={stock} onChange={(e) => setStock(e.target.value)} required min={0} type="number" />
+          {variantTotal === null ? (
+            <input
+              id="stock"
+              name="stock"
+              inputMode="numeric"
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              required
+              min={0}
+              type="number"
+            />
+          ) : (
+            <input
+              id="stock"
+              name="stock"
+              value={variantTotal}
+              readOnly
+              title="Хувилбаруудын нийлбэр"
+            />
+          )}
         </div>
       </div>
 
       <label htmlFor="compareAtPrice">
         Хямдралын өмнөх үнэ (₮) <span className="muted">(заавал биш)</span>
       </label>
-      <input id="compareAtPrice" name="compareAtPrice" inputMode="numeric" value={compareAt} onChange={(e) => setCompareAt(e.target.value.replace(/[^\d]/g, ""))} placeholder="Хямдралтай бол хуучин үнэ" />
+      <input
+        id="compareAtPrice"
+        name="compareAtPrice"
+        inputMode="numeric"
+        value={compareAt}
+        onChange={(e) => setCompareAt(e.target.value.replace(/[^\d]/g, ""))}
+        placeholder="Хямдралтай бол хуучин үнэ"
+      />
       {compareAt && price && Number(compareAt) > Number(price) && (
-        <p className="ai-status ok">−{Math.round((1 - Number(price) / Number(compareAt)) * 100)}% хямдрал гэж харагдана</p>
+        <p className="ai-status ok">
+          −{Math.round((1 - Number(price) / Number(compareAt)) * 100)}% хямдрал
+          гэж харагдана
+        </p>
       )}
 
+      <VariantsEditor initial={variants} onTotalChange={setVariantTotal} />
+
       <label htmlFor="category">Ангилал</label>
-      <select id="category" name="category" value={category} onChange={(e) => setCategory(e.target.value)}>
+      <select
+        id="category"
+        name="category"
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+      >
         <option value="">Сонгоогүй</option>
         {PRODUCT_CATEGORIES.map((c) => (
           <option key={c} value={c}>
@@ -126,12 +212,26 @@ export function ProductForm({ action, submitLabel, ai, product }: Props) {
       </select>
 
       <label htmlFor="description">Тайлбар</label>
-      <textarea id="description" name="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={1000} placeholder="Материал, өнгө, размер, онцлог" />
+      <textarea
+        id="description"
+        name="description"
+        rows={4}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        maxLength={1000}
+        placeholder="Материал, өнгө, размер, онцлог"
+      />
 
       <label htmlFor="sku">
         Код / SKU <span className="muted">(заавал биш)</span>
       </label>
-      <input id="sku" name="sku" value={sku} onChange={(e) => setSku(e.target.value)} maxLength={40} />
+      <input
+        id="sku"
+        name="sku"
+        value={sku}
+        onChange={(e) => setSku(e.target.value)}
+        maxLength={40}
+      />
 
       {state.error && <p className="form-error">{state.error}</p>}
       <button type="submit" disabled={pending || analyzing}>

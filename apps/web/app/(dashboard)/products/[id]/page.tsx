@@ -8,7 +8,7 @@ import { archiveProduct, updateProduct } from "../actions";
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { shop } = await requireShop();
   const { id } = await params;
-  const product = await prisma.product.findFirst({ where: { id, shopId: shop.id, isActive: true } });
+  const product = await prisma.product.findFirst({ where: { id, shopId: shop.id, isActive: true }, include: { variants: { orderBy: { sortOrder: "asc" } } } });
   if (!product) notFound();
 
   const update = updateProduct.bind(null, product.id);
@@ -17,7 +17,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   return (
     <div className="narrow">
       <h1>Бараа засах</h1>
-      <ProductForm action={update} ai={aiEnabled()} submitLabel="Хадгалах" product={product} />
+      <ProductForm action={update} ai={aiEnabled()} submitLabel="Хадгалах" product={product} variants={product.variants.map((v) => ({ id: v.id, name: v.name, stock: v.stock, price: v.price }))} />
       <form action={archive} className="danger-zone">
         <button type="submit" className="link-button danger">
           Барааг жагсаалтаас хасах
