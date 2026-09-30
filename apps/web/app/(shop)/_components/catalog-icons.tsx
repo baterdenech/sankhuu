@@ -70,3 +70,7 @@ export const HelpIcon = ({ size, className }: P) => (
 export const ShieldIcon = ({ size, className }: P) => (
   <svg {...base(size)} className={className}><path d="M12 3.5 5 6v5.5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6z" /><path d="m9.3 12 2 2 3.6-3.8" /></svg>
 );
+// Шүүлтүүр (гурван гулсуур)
+export const FilterIcon = ({ size, className }: P) => (
+  <svg {...base(size)} className={className}><path d="M4 7h10M18 7h2M4 12h3M11 12h9M4 17h13M21 17h-1" /><circle cx="16" cy="7" r="2" /><circle cx="9" cy="12" r="2" /><circle cx="19" cy="17" r="2" /></svg>
+);
