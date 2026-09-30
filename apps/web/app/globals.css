@@ -333,3 +333,16 @@ a.card:hover { border-color: var(--accent); }
 .chip.small { padding: 3px 8px; font-size: 12px; }
 .chip.small b { font-weight: 700; }
 .chip.small.zero { color: #dc2626; border-color: #fecaca; }
+
+/* ─── Захиалгын жагсаалтын хэрэгслүүд: хайлт, хугацаа, дүн, Excel/хэвлэх, хуудаслалт ─── */
+.order-filters { gap: 8px 10px; }
+.order-filters input[type="search"] { min-width: 220px; }
+.range-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.date-field { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.date-field input { font: inherit; font-size: 13px; padding: 7px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); }
+.order-summary-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin: -4px 0 14px; font-size: 14px; color: var(--muted); }
+.order-summary-bar strong { color: var(--text); }
+.order-tools { display: flex; gap: 8px; }
+.btn.small { padding: 6px 10px; font-size: 13px; }
+.order-print { margin-left: auto; color: var(--accent); }
+.pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
