@@ -29,6 +29,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.117.2
         version: 2.117.2
+      leaflet:
+        specifier: ^1.9.4
+        version: 1.9.4
       next:
         specifier: ^16.3.7
         version: 16.3.7(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -42,6 +45,9 @@ importers:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
+      '@types/leaflet':
+        specifier: ^1.9.22
+        version: 1.9.22
       '@types/node':
         specifier: ^22.0.0
         version: 22.20.4
@@ -575,6 +581,9 @@ packages:
   '@types/geojson@7946.0.16':
     resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
 
+  '@types/leaflet@1.9.22':
+    resolution: {integrity: sha512-h3lhECYEKDasG7LFHu+GiHqAvsgLuQvlJvVZzJDGONo3sEL+wUOqSFLnwkZlK0qVxnxbuGFW8iBlJNYs5wgndA==}
+
   '@types/lodash@4.17.25':
     resolution: {integrity: sha512-+K1NIO8I+F9/wNulfVvu23QYd0Pe9/OCqRrim4NoYIf1VoEDL90Ve4ClzpyqBLc7NpGGWRvYNCKZ1BE/Jpf8dQ==}
 
@@ -844,6 +853,9 @@ packages:
 
   json-schema-traverse@1.0.0:
     resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
+
+  leaflet@1.9.4:
+    resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
 
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
@@ -1553,6 +1565,10 @@ snapshots:
 
   '@types/geojson@7946.0.16': {}
 
+  '@types/leaflet@1.9.22':
+    dependencies:
+      '@types/geojson': 7946.0.16
+
   '@types/lodash@4.17.25': {}
 
   '@types/node@22.20.4':
@@ -1839,6 +1855,8 @@ snapshots:
       ts-algebra: 2.0.0
 
   json-schema-traverse@1.0.0: {}
+
+  leaflet@1.9.4: {}
 
   lodash@4.18.1: {}
 

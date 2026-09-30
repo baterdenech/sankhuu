@@ -5,6 +5,7 @@ import { DISTRICTS } from "@/lib/districts";
 import { deliveryFeeFor } from "@/lib/delivery-fee";
 import { formatMNT } from "@/lib/labels";
 import { createManualOrder, type ManualOrderState } from "../actions";
+import { LocationPicker } from "@/app/_components/location-picker";
 
 type Product = { id: string; name: string; price: number; stock: number };
 type Line = { productId: string; qty: number };
@@ -96,6 +97,7 @@ export function ManualOrderForm({ products }: { products: Product[] }) {
         </div>
         <label htmlFor="details">Дэлгэрэнгүй хаяг</label>
         <textarea id="details" name="details" rows={2} required defaultValue={v.details ?? ""} maxLength={300} placeholder="Байр, орц, давхар, тоот, орох тэмдэг" />
+        <LocationPicker />
       </fieldset>
 
       <div className="row">

@@ -4,8 +4,9 @@ import { useActionState, useState } from "react";
 import { DISTRICTS } from "@/lib/districts";
 import { compressImage } from "../products/compress-image";
 import { updateShop, type SettingsState } from "./actions";
+import { LocationPicker } from "@/app/_components/location-picker";
 
-type Initial = { name: string; phone: string; facebookPageUrl: string; district: string; khoroo: string; details: string; logoUrl: string | null };
+type Initial = { name: string; phone: string; facebookPageUrl: string; district: string; khoroo: string; details: string; logoUrl: string | null; lat: number | null; lng: number | null };
 
 export function SettingsForm({ initial }: { initial: Initial }) {
   const [state, action, pending] = useActionState<SettingsState, FormData>(
@@ -93,6 +94,7 @@ export function SettingsForm({ initial }: { initial: Initial }) {
         </div>
         <label htmlFor="details">Дэлгэрэнгүй хаяг</label>
         <textarea id="details" name="details" rows={2} required defaultValue={v.details} maxLength={300} />
+        <LocationPicker initial={initial.lat != null && initial.lng != null ? { lat: initial.lat, lng: initial.lng } : null} />
       </fieldset>
 
       {state.error && <p className="form-error">{state.error}</p>}

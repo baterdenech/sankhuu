@@ -10,6 +10,7 @@ import { ProductImage, RocketBadge } from "../_components/product-card";
 import { CartIcon, ChevronIcon } from "../_components/icons";
 import { arrivalLabel } from "../_components/catalog-meta";
 import { placeOrder, type CheckoutState } from "./actions";
+import { LocationPicker } from "@/app/_components/location-picker";
 
 // Coupang маягийн сагс: "Бүгдийг сонгох" + мөр бүрт checkbox, дэлгүүр бүрээр бүлэглэж хүргэлтийн хөлс, доор наалддаг "Захиалах (n)"
 export type CheckoutPrefill = { name: string; phone: string; district: string; khoroo: string; details: string };
@@ -172,6 +173,7 @@ export function CartView({ prefill }: { prefill?: CheckoutPrefill | null }) {
             </div>
             <label htmlFor="details">Дэлгэрэнгүй хаяг</label>
             <textarea id="details" name="details" rows={2} required defaultValue={v.details ?? ""} maxLength={300} placeholder="Байр, орц, давхар, тоот, орох тэмдэг" />
+            <LocationPicker compact />
             <label htmlFor="note">
               Нэмэлт тайлбар <span className="muted">(заавал биш)</span>
             </label>

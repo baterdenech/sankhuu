@@ -16,6 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="shop-name">Диспетчер</div>
         <nav>
           <Link href="/admin">Хүргэлт</Link>
+          <Link href="/admin/map">Газрын зураг</Link>
           <Link href="/admin/drivers">Жолооч</Link>
           <Link href="/admin/cash">Бэлэн мөнгө</Link>
           <Link href="/admin/settlements">Тооцоо</Link>
