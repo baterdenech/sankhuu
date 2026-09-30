@@ -4,7 +4,7 @@
   --text: #1a1d23;
   --muted: #6b7280;
   --border: #e5e7eb;
-  --accent: #1877f2;
+  --accent: #ff6f0f;
 }
 @media (prefers-color-scheme: dark) {
   :root {

@@ -6,18 +6,19 @@
 .online-toggle.on { background: #dcfce7; border-color: #86efac; color: #15803d; }
 .online-toggle.on .dot { background: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.2); }
 .driver-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 12px 16px 4px; }
-.driver-stats > div { display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 12px; background: var(--canvas); }
+.driver-stats > div { display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 12px; background: var(--card); box-shadow: var(--shadow); }
 .driver-stats strong { font-size: 18px; letter-spacing: -0.02em; }
 .driver-stats > div:last-child strong { font-size: 14px; }
 .dlist { list-style: none; margin: 0; padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
 .dcard { border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--card); }
-.dcard.dropoff { border-color: #bfdbfe; box-shadow: 0 4px 14px rgba(52,106,255,0.08); }
+.dcard { border: 0; box-shadow: var(--shadow); }
+.dcard.dropoff { box-shadow: 0 4px 16px rgba(255,111,15,0.14); }
 .dcard-head { display: flex; align-items: center; gap: 8px; }
 .dcard-head strong { font-size: 15px; }
 .dcard-head .muted { margin-left: auto; }
 .dcard-tag { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
 .tag-pickup { background: #fef3c7; color: #b45309; }
-.tag-drop { background: var(--blue-soft); color: var(--blue); }
+.tag-drop { background: var(--brand-soft); color: var(--brand); }
 .dcard-place { display: flex; flex-direction: column; gap: 4px; }
 .dcard-who { display: flex; align-items: baseline; gap: 8px; font-size: 16px; }
 .dcard-addr { font-size: 14px; line-height: 1.45; color: var(--ink-2); }
@@ -40,5 +41,5 @@
 .hist-status.d-DELIVERED { color: var(--green); }
 .hist-status.d-FAILED { color: var(--red); }
 .hist-status.d-RETURNED_TO_SHOP { color: var(--ink-3); }
-.cash-hero { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 28px 16px 20px; margin: 12px 16px 0; border-radius: 16px; background: linear-gradient(135deg, var(--blue-soft), #ede9fe); }
+.cash-hero { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 28px 16px 20px; margin: 12px 16px 0; border-radius: 16px; background: linear-gradient(135deg, var(--brand-soft), #ede9fe); }
 .cash-hero strong { font-size: 32px; letter-spacing: -0.03em; }
