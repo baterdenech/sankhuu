@@ -1,19 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
+import { PRODUCT_CATEGORIES } from "@/lib/categories";
 
-export const PRODUCT_CATEGORIES = [
-  "Хувцас",
-  "Гутал",
-  "Цүнх, аксессуар",
-  "Гоо сайхан",
-  "Хүүхдийн бараа",
-  "Гэр ахуй",
-  "Электрон бараа",
-  "Хүнс",
-  "Спорт",
-  "Бусад",
-] as const;
+export { PRODUCT_CATEGORIES } from "@/lib/categories";
 
 const ProductDraft = z.object({
   name: z.string().describe("Барааны товч, борлуулалтад тохирсон нэр (монголоор, 60 тэмдэгт хүртэл)"),

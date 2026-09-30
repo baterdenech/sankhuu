@@ -2,7 +2,8 @@
 
 import { useActionState, useRef, useState, useTransition } from "react";
 import type { Product } from "@sankhuu/db";
-import { PRODUCT_CATEGORIES, type ProductDraft } from "@/lib/ai/product";
+import { PRODUCT_CATEGORIES } from "@/lib/categories";
+import type { ProductDraft } from "@/lib/ai/product";
 import { suggestFromImage, type FormState } from "./actions";
 import { compressImage } from "./compress-image";
 

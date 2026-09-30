@@ -5,7 +5,8 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@sankhuu/db";
 import { requireShop } from "@/lib/shop";
 import { uploadImage } from "@/lib/storage";
-import { analyzeProductImage, PRODUCT_CATEGORIES, type ProductDraft } from "@/lib/ai/product";
+import { analyzeProductImage, type ProductDraft } from "@/lib/ai/product";
+import { PRODUCT_CATEGORIES } from "@/lib/categories";
 
 export type FormState = { error?: string };
 

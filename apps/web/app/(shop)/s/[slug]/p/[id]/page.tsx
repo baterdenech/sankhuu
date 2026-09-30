@@ -2,10 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@sankhuu/db";
-import { formatMNT } from "@/lib/labels";
 import { TopBar } from "../../../../_components/top-bar";
 import { StoreIcon, TruckIcon } from "../../../../_components/icons";
-import { ProductCard } from "../../../../_components/product-card";
+import { Price, ProductCard, ProductImage } from "../../../../_components/product-card";
 import { soldCounts } from "../../../../_components/catalog";
 import { BuyBar } from "./buy-bar";
 
@@ -30,15 +29,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <TopBar title="" backHref={`/s/${slug}`} />
       <article className="pdp">
         <div className="pdp-media">
-          {product.images[0] ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={product.images[0]} alt={product.name} />
-          ) : (
-            <span className="no-image">Зураггүй</span>
-          )}
+          <ProductImage src={product.images[0]} alt={product.name} category={product.category} />
         </div>
         <div className="pdp-body">
-          <div className="pdp-price">{formatMNT(product.price)}</div>
+          <div className="pdp-price-row">
+            <Price value={product.price} className="pdp-price" />
+            <span className="chip mini">Хүргэлт 5,000₮-с</span>
+          </div>
           <h1 className="pdp-name">{product.name}</h1>
           <div className="pdp-meta muted small-text">
             {product.category && <span>{product.category}</span>}
@@ -87,7 +84,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         )}
       </article>
       <BuyBar
-        item={{ productId: product.id, name: product.name, price: product.price, image: product.images[0] ?? null, maxQty: product.stock, shopId: product.shopId, shopSlug: slug, shopName: product.shop.name }}
+        item={{ productId: product.id, name: product.name, price: product.price, image: product.images[0] ?? null, category: product.category, maxQty: product.stock, shopId: product.shopId, shopSlug: slug, shopName: product.shop.name }}
+        shopHref={`/s/${slug}`}
       />
     </>
   );

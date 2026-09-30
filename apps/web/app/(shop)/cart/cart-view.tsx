@@ -6,6 +6,7 @@ import { formatMNT } from "@/lib/labels";
 import { DISTRICTS } from "@/lib/districts";
 import { deliveryFeeFor } from "@/lib/delivery-fee";
 import { useCart } from "../_components/cart-store";
+import { ProductImage } from "../_components/product-card";
 import { placeOrder, type CheckoutState } from "./actions";
 
 export function CartView() {
@@ -55,10 +56,7 @@ export function CartView() {
               {g.items.map((i) => (
                 <div key={i.productId} className="cart-line">
                   <div className="cart-line-media">
-                    {i.image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={i.image} alt="" />
-                    ) : null}
+                    <ProductImage src={i.image ?? undefined} alt="" category={i.category} />
                   </div>
                   <div className="cart-line-body">
                     <div className="cart-line-name">{i.name}</div>

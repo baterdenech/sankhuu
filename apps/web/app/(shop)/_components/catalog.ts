@@ -1,19 +1,6 @@
 import { prisma, type Prisma } from "@sankhuu/db";
-import { PRODUCT_CATEGORIES } from "@/lib/ai/product";
 
-export const CATEGORY_ICONS: Record<string, string> = {
-  Хувцас: "👗",
-  Гутал: "👟",
-  "Цүнх, аксессуар": "👜",
-  "Гоо сайхан": "💄",
-  "Хүүхдийн бараа": "🧸",
-  "Гэр ахуй": "🏠",
-  "Электрон бараа": "📱",
-  Хүнс: "🍎",
-  Спорт: "🏀",
-  Бусад: "🎁",
-};
-export const ALL_CATEGORIES = PRODUCT_CATEGORIES;
+export { ALL_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS, categoryStyle } from "./catalog-meta";
 
 // Идэвхтэй дэлгүүрийн, нийтэд харагдах бараа
 export const publicProductWhere: Prisma.ProductWhereInput = { isActive: true, shop: { isActive: true } };
