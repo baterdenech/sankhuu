@@ -143,6 +143,7 @@ export function CartView({ prefill }: { prefill?: CheckoutPrefill | null }) {
             );
           })}
 
+          <div className="checkout-side">
           <section className="cart-group form">
             <h2 className="cart-group-head static">Хүргэлтийн мэдээлэл</h2>
             <label htmlFor="name">Нэр</label>
@@ -197,6 +198,7 @@ export function CartView({ prefill }: { prefill?: CheckoutPrefill | null }) {
             {state.error && <p className="form-error">{state.error}</p>}
           </section>
 
+          {/* Утсан дээр fixed доод мөр, PC дээр баруун баганын доод хэсэг */}
           <div className="buybar">
             <div className="buybar-total">
               <span className="muted small-text">Нийт төлөх</span>
@@ -205,6 +207,7 @@ export function CartView({ prefill }: { prefill?: CheckoutPrefill | null }) {
             <button type="submit" className="btn big primary" disabled={pending || fee === null || selected.length === 0}>
               {pending ? "Илгээж байна…" : `Захиалах (${selCount})`}
             </button>
+          </div>
           </div>
         </form>
       )}
