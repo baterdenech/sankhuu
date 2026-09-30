@@ -31,10 +31,18 @@ export default async function DashboardPage() {
     <>
       <div className="page-head">
         <h1>Хянах самбар</h1>
-        <Link href="/products/new" className="btn primary">
-          + Бараа нэмэх
-        </Link>
+        <div className="actions">
+          <Link href={`/s/${shop.slug}`} target="_blank" className="btn">
+            Дэлгүүрээ үзэх ↗
+          </Link>
+          <Link href="/products/new" className="btn primary">
+            + Бараа нэмэх
+          </Link>
+        </div>
       </div>
+      <p className="share-link">
+        Худалдан авагчдад өгөх холбоос: <code>erp.flexlink.mn/s/{shop.slug}</code>
+      </p>
       <div className="cards">
         {stats.map((s) => (
           <Link key={s.label} href={s.href} className={`card${s.warn ? " warn" : ""}`}>

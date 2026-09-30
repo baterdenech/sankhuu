@@ -32,5 +32,7 @@ Sankhuu нь Facebook худалдагчдад зориулсан захиалг
 - AI: `apps/web/lib/ai/product.ts` — `@anthropic-ai/sdk`, `claude-opus-5-5`, structured output (zod). `ANTHROPIC_API_KEY` байхгүй бол `aiEnabled()` false буцааж UI гараар ажиллана.
 - Server Action-аас алдаа буцаахдаа оруулсан утгуудыг (`values`) хамт буцаана: React 19 форм reset хийдэг тул талбарууд хоосорно. `<select>`-д `key` өгнө.
 - Хажуугийн цэсний "Гарах" ч `type=submit` тул тестэд формын товчийг `.product-form button[type=submit]` гэх мэтээр нарийн сонгоно.
+- Худалдан авагчийн нээлттэй хуудсууд `app/s/[slug]/` дотор: нэвтрэлт шаардахгүй (`proxy.ts` matcher `s/`-г алгасдаг). Сагс `cart-store.ts` (localStorage, дэлгүүр тус бүрээр). Захиалга `placeOrder` нэг transaction дотор үлдэгдэл хасаж (`stock >= qty` нөхцөлтэй), Customer/Address/Order/Delivery(PENDING)+DeliveryEvent үүсгэнэ.
+- Захиалгын статусын шилжилтийг `app/(dashboard)/orders/actions.ts`-ийн `ALLOWED` хүснэгтээр хязгаарлана. Цуцлахад үлдэгдлийг буцаана.
 - Шинэ хүснэгт нэмэх бүрт migration SQL-ийн төгсгөлд `ALTER TABLE "..." ENABLE ROW LEVEL SECURITY;` нэмнэ (Supabase Data API-аас хаах).
 - Мэдээллийн сантай зөвхөн серверээс (Server Component / Server Action / Route Handler) Prisma-аар холбогдоно. Supabase anon key-ээр хүснэгт рүү хандахгүй.
