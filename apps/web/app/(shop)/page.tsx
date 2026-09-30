@@ -5,6 +5,7 @@ import { CartIcon, SearchIcon } from "./_components/icons";
 import { ProductCard } from "./_components/product-card";
 import { BannerCarousel } from "./_components/banner-carousel";
 import { CartBadge } from "./_components/cart-badge";
+import { Countdown } from "./_components/countdown";
 import { ALL_CATEGORIES, categoryStyle, publicProductWhere, soldCounts } from "./_components/catalog";
 
 // Бараа DB-ээс ирдэг тул хүсэлт бүрт render хийнэ (build үед урьдчилж үүсгэхгүй)
@@ -26,7 +27,7 @@ const QUICK = [
   { label: "Шинэ", emoji: "🆕", href: "/search?q=&new=1" },
   { label: "Эрэлттэй", emoji: "🔥", href: "/search?q=&hot=1" },
   { label: "Дэлгүүрүүд", emoji: "🏬", href: "/shops" },
-  { label: "Миний захиалга", emoji: "📦", href: "/me" },
+  { label: "Захиалга", emoji: "📦", href: "/me" },
 ];
 
 export default async function HomePage() {
@@ -73,7 +74,9 @@ export default async function HomePage() {
       <section className="cat-grid" aria-label="Ангилал">
         {ALL_CATEGORIES.map((c) => (
           <Link key={c} href={`/categories/${encodeURIComponent(c)}`} className="cat-item">
-            <span className="cat-icon">{categoryStyle(c).icon}</span>
+            <span className="cat-icon" style={{ background: categoryStyle(c).background }}>
+              {categoryStyle(c).icon}
+            </span>
             <span className="cat-label">{c}</span>
           </Link>
         ))}
@@ -83,7 +86,7 @@ export default async function HomePage() {
         <section className="feed">
           <div className="feed-head">
             <h2 className="feed-title">
-              Өнөөдрийн хямдрал
+              Өнөөдрийн хямдрал <Countdown />
             </h2>
             <Link href="/search?q=&sale=1" className="feed-more">
               Бүгд ›
@@ -103,6 +106,9 @@ export default async function HomePage() {
         <section className="feed">
           <div className="feed-head">
             <h2 className="feed-title">Эрэлттэй бараа</h2>
+            <Link href="/search?q=&hot=1" className="feed-more">
+              Бүгд ›
+            </Link>
           </div>
           <div className="hscroll">
             {popular.map((p) => (

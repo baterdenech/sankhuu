@@ -6,14 +6,19 @@ import { formatMNT } from "@/lib/labels";
 import { DISTRICTS } from "@/lib/districts";
 import { deliveryFeeFor } from "@/lib/delivery-fee";
 import { useCart } from "../_components/cart-store";
-import { ProductImage } from "../_components/product-card";
+import { ProductImage, RocketBadge } from "../_components/product-card";
+import { ChevronIcon } from "../_components/icons";
+import { arrivalLabel } from "../_components/catalog-meta";
 import { placeOrder, type CheckoutState } from "./actions";
 
+// Coupang маягийн сагс: "Бүгдийг сонгох" + мөр бүрт checkbox, дэлгүүр бүрээр бүлэглэж хүргэлтийн хөлс, доор наалддаг "Захиалах (n)"
 export function CartView() {
   const cart = useCart();
   const [state, formAction, pending] = useActionState<CheckoutState, FormData>(placeOrder, {});
   const v = state.values ?? {};
   const [district, setDistrict] = useState("");
+  // Сонгоогүй барааны id (анхдагчаар бүгд сонгогдсон тул "хасагдсан" жагсаалт хадгална)
+  const [unchecked, setUnchecked] = useState<Set<string>>(() => new Set());
   useEffect(() => {
     if (v.district) setDistrict(v.district);
   }, [v.district]);
@@ -28,8 +33,26 @@ export function CartView() {
     }
     return [...m.values()];
   }, [cart.items]);
-  const shopCount = groups.length;
-  const deliveryTotal = fee === null ? 0 : fee * shopCount;
+
+  const isOn = (id: string) => !unchecked.has(id);
+  const selected = cart.items.filter((i) => isOn(i.productId));
+  const selCount = selected.reduce((n, i) => n + i.qty, 0);
+  const selSubtotal = selected.reduce((n, i) => n + i.qty * i.price, 0);
+  const selShops = new Set(selected.map((i) => i.shopId)).size;
+  const deliveryTotal = fee === null ? 0 : fee * selShops;
+  const allOn = cart.items.length > 0 && selected.length === cart.items.length;
+
+  function toggle(id: string) {
+    setUnchecked((s) => {
+      const n = new Set(s);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  }
+  function toggleAll() {
+    setUnchecked(allOn ? new Set(cart.items.map((i) => i.productId)) : new Set());
+  }
 
   return (
     <>
@@ -46,40 +69,73 @@ export function CartView() {
         </div>
       ) : (
         <form action={formAction} className="checkout">
-          <input type="hidden" name="cart" value={JSON.stringify(cart.items.map((i) => ({ productId: i.productId, qty: i.qty })))} />
+          <input type="hidden" name="cart" value={JSON.stringify(selected.map((i) => ({ productId: i.productId, qty: i.qty })))} />
 
-          {groups.map((g) => (
-            <section key={g.shopSlug} className="cart-group">
-              <Link href={`/s/${g.shopSlug}`} className="cart-group-head">
-                {g.shopName} ›
-              </Link>
-              {g.items.map((i) => (
-                <div key={i.productId} className="cart-line">
-                  <div className="cart-line-media">
-                    <ProductImage src={i.image ?? undefined} alt="" category={i.category} />
-                  </div>
-                  <div className="cart-line-body">
-                    <div className="cart-line-name">{i.name}</div>
-                    <div className="cart-line-row">
-                      <strong>{formatMNT(i.price)}</strong>
-                      <div className="qty">
-                        <button type="button" onClick={() => cart.setQty(i.productId, i.qty - 1)} aria-label="Хасах">
-                          −
-                        </button>
-                        <span>{i.qty}</span>
-                        <button type="button" onClick={() => cart.setQty(i.productId, i.qty + 1)} disabled={i.qty >= i.maxQty} aria-label="Нэмэх">
-                          +
-                        </button>
+          <div className="cart-toolbar">
+            <label className="check">
+              <input type="checkbox" checked={allOn} onChange={toggleAll} />
+              <span>
+                Бүгдийг сонгох ({selected.length}/{cart.items.length})
+              </span>
+            </label>
+            <button type="button" className="link-button" onClick={() => selected.forEach((i) => cart.remove(i.productId))} disabled={selected.length === 0}>
+              Сонгосныг устгах
+            </button>
+          </div>
+
+          {groups.map((g) => {
+            const gItems = g.items.filter((i) => isOn(i.productId));
+            const gSub = gItems.reduce((n, i) => n + i.qty * i.price, 0);
+            return (
+              <section key={g.shopSlug} className="cart-group">
+                <Link href={`/s/${g.shopSlug}`} className="cart-group-head">
+                  {g.shopName} <ChevronIcon size={14} />
+                </Link>
+                {g.items.map((i) => (
+                  <div key={i.productId} className={`cart-line${isOn(i.productId) ? "" : " off"}`}>
+                    <label className="check cart-check" aria-label="Сонгох">
+                      <input type="checkbox" checked={isOn(i.productId)} onChange={() => toggle(i.productId)} />
+                    </label>
+                    <Link href={`/s/${i.shopSlug}/p/${i.productId}`} className="cart-line-media">
+                      <ProductImage src={i.image ?? undefined} alt="" category={i.category} />
+                    </Link>
+                    <div className="cart-line-body">
+                      <div className="cart-line-name">{i.name}</div>
+                      <div className="cart-line-row">
+                        <strong>{formatMNT(i.price * i.qty)}</strong>
+                        <div className="qty">
+                          <button type="button" onClick={() => cart.setQty(i.productId, i.qty - 1)} aria-label="Хасах">
+                            −
+                          </button>
+                          <span>{i.qty}</span>
+                          <button type="button" onClick={() => cart.setQty(i.productId, i.qty + 1)} disabled={i.qty >= i.maxQty} aria-label="Нэмэх">
+                            +
+                          </button>
+                        </div>
                       </div>
                     </div>
+                    <button type="button" className="cart-remove" onClick={() => cart.remove(i.productId)} aria-label="Устгах">
+                      ×
+                    </button>
                   </div>
-                  <button type="button" className="cart-remove" onClick={() => cart.remove(i.productId)} aria-label="Устгах">
-                    ×
-                  </button>
+                ))}
+                <div className="cart-group-foot">
+                  <span className="cart-group-ship">
+                    <RocketBadge /> <span className="arrive">{arrivalLabel()}</span>
+                  </span>
+                  <span className="muted small-text">
+                    {gItems.length > 0 ? (
+                      <>
+                        Бараа {formatMNT(gSub)} · Хүргэлт {district ? (fee === null ? "—" : formatMNT(fee)) : "дүүргээр"}
+                      </>
+                    ) : (
+                      "Сонгосон бараа алга"
+                    )}
+                  </span>
                 </div>
-              ))}
-            </section>
-          ))}
+              </section>
+            );
+          })}
 
           <section className="cart-group form">
             <h2 className="cart-group-head static">Хүргэлтийн мэдээлэл</h2>
@@ -119,28 +175,28 @@ export function CartView() {
 
           <section className="cart-group summary">
             <div>
-              <span>Бараа ({cart.count})</span>
-              <span>{formatMNT(cart.subtotal)}</span>
+              <span>Бараа ({selCount})</span>
+              <span>{formatMNT(selSubtotal)}</span>
             </div>
             <div>
-              <span>Хүргэлт{shopCount > 1 ? ` (${shopCount} дэлгүүр)` : ""}</span>
+              <span>Хүргэлт{selShops > 1 ? ` (${selShops} дэлгүүр)` : ""}</span>
               <span>{district ? (fee === null ? "Энэ бүсэд хүргэхгүй" : formatMNT(deliveryTotal)) : "Дүүргээ сонгоно уу"}</span>
             </div>
             <div className="total">
-              <span>Нийт</span>
-              <span>{formatMNT(cart.subtotal + deliveryTotal)}</span>
+              <span>Нийт төлөх</span>
+              <span>{formatMNT(selSubtotal + deliveryTotal)}</span>
             </div>
-            <p className="muted small-text">Төлбөрийг бараагаа хүлээн авахдаа жолоочид бэлнээр эсвэл шилжүүлгээр төлнө.{shopCount > 1 ? " Дэлгүүр бүрийн бараа тусдаа хүргэгдэнэ." : ""}</p>
+            <p className="muted small-text">Төлбөрийг бараагаа хүлээн авахдаа жолоочид бэлнээр эсвэл шилжүүлгээр төлнө.{selShops > 1 ? " Дэлгүүр бүрийн бараа тусдаа хүргэгдэнэ." : ""}</p>
             {state.error && <p className="form-error">{state.error}</p>}
           </section>
 
           <div className="buybar">
             <div className="buybar-total">
-              <span className="muted small-text">Нийт</span>
-              <strong>{formatMNT(cart.subtotal + deliveryTotal)}</strong>
+              <span className="muted small-text">Нийт төлөх</span>
+              <strong>{formatMNT(selSubtotal + deliveryTotal)}</strong>
             </div>
-            <button type="submit" className="btn big primary" disabled={pending || fee === null}>
-              {pending ? "Илгээж байна…" : "Захиалах"}
+            <button type="submit" className="btn big primary" disabled={pending || fee === null || selected.length === 0}>
+              {pending ? "Илгээж байна…" : `Захиалах (${selCount})`}
             </button>
           </div>
         </form>

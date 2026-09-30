@@ -4,9 +4,19 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { formatMNT, orderStatusLabel } from "@/lib/labels";
 import { readSavedOrders } from "../_components/cart-store";
+import { ProductImage } from "../_components/product-image";
+import { BoxIcon, CheckIcon, ChevronIcon, ClockIcon, TruckIcon } from "../_components/icons";
 import { getMyOrders } from "../cart/actions";
 
 type Row = Awaited<ReturnType<typeof getMyOrders>>[number];
+
+// Coupang-ийн "마이쿠팡" маягийн захиалгын явцын мөр: Хүлээгдэж буй → Бэлтгэж буй → Хүргэлтэд → Хүргэгдсэн
+const STEPS = [
+  { key: "new", label: "Хүлээн авсан", Icon: ClockIcon, statuses: ["NEW"] },
+  { key: "prep", label: "Бэлтгэж байна", Icon: BoxIcon, statuses: ["CONFIRMED", "READY_FOR_PICKUP"] },
+  { key: "ship", label: "Хүргэлтэд", Icon: TruckIcon, statuses: ["IN_DELIVERY"] },
+  { key: "done", label: "Хүргэгдсэн", Icon: CheckIcon, statuses: ["DELIVERED"] },
+] as const;
 
 export function MyOrders() {
   const [rows, setRows] = useState<Row[] | null>(null);
@@ -29,41 +39,66 @@ export function MyOrders() {
       </div>
     );
 
+  const counts = STEPS.map((s) => rows.filter((o) => (s.statuses as readonly string[]).includes(o.status)).length);
+
   return (
-    <ul className="my-orders">
-      {rows.map((o) => (
-        <li key={o.number} className="cart-group">
-          <div className="my-order-head">
-            <Link href={`/s/${o.shop.slug}`}>{o.shop.name} ›</Link>
-            <span className={`status s-${o.status}`}>{orderStatusLabel[o.status]}</span>
-          </div>
-          <div className="my-order-body">
-            <span className="muted small-text">
-              #{o.number} · {new Date(o.createdAt).toLocaleDateString("mn-MN")}
+    <>
+      <section className="order-steps" aria-label="Захиалгын явц">
+        {STEPS.map((s, idx) => (
+          <div key={s.key} className={`order-step${counts[idx] > 0 ? " on" : ""}`}>
+            <span className="order-step-icon">
+              <s.Icon size={20} />
+              {counts[idx] > 0 && <span className="order-step-n">{counts[idx]}</span>}
             </span>
+            <span>{s.label}</span>
+          </div>
+        ))}
+      </section>
+
+      <ul className="my-orders">
+        {rows.map((o) => (
+          <li key={o.number} className="cart-group">
+            <div className="my-order-head">
+              <span className={`order-status s-${o.status}`}>{orderStatusLabel[o.status]}</span>
+              <span className="muted small-text">
+                #{o.number} · {new Date(o.createdAt).toLocaleDateString("mn-MN")}
+              </span>
+            </div>
+            <Link href={`/s/${o.shop.slug}`} className="my-order-shop">
+              {o.shop.name} <ChevronIcon size={14} />
+            </Link>
             <ul className="my-items">
               {o.items.map((i, idx) => (
-                <li key={idx}>
-                  <span>
-                    {i.name} × {i.quantity}
+                <li key={idx} className="my-item">
+                  <span className="my-item-media">
+                    <ProductImage src={i.image ?? undefined} alt="" category={i.category} />
+                  </span>
+                  <span className="my-item-body">
+                    <span className="cart-line-name">{i.name}</span>
+                    <span className="muted small-text">
+                      {formatMNT(i.unitPrice)} · {i.quantity} ш
+                    </span>
                   </span>
                   {o.status === "DELIVERED" && i.productId && (
                     i.rating ? (
                       <span className="rated">★ {i.rating}</span>
                     ) : (
                       <Link href={`/reviews/new?n=${o.number}&phone=${encodeURIComponent(o.phone)}&product=${i.productId}`} className="btn small outline">
-                        Үнэлгээ өгөх
+                        Үнэлэх
                       </Link>
                     )
                   )}
                 </li>
               ))}
             </ul>
-            <strong>{formatMNT(o.total)}</strong>
-          </div>
-        </li>
-      ))}
-      <li className="muted small-text pad">Хүргэлтийн явцыг дэлгүүр болон жолооч утсаар мэдэгдэнэ.</li>
-    </ul>
+            <div className="my-order-foot">
+              <span className="muted small-text">Нийт (хүргэлттэй)</span>
+              <strong>{formatMNT(o.total)}</strong>
+            </div>
+          </li>
+        ))}
+        <li className="muted small-text pad">Хүргэлтийн явцыг дэлгүүр болон жолооч утсаар мэдэгдэнэ.</li>
+      </ul>
+    </>
   );
 }
