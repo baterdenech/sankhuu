@@ -6,6 +6,7 @@ import { requireShop } from "@/lib/shop";
 import { normalizeMongolianPhone } from "@/lib/phone";
 import { DISTRICTS } from "@/lib/districts";
 import { uploadImage } from "@/lib/storage";
+import { parseLatLng } from "@/lib/geo";
 
 export type SettingsState = { error?: string; ok?: string; values?: Record<string, string> };
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
@@ -23,6 +24,7 @@ export async function updateShop(_prev: SettingsState, fd: FormData): Promise<Se
   if (!(DISTRICTS as readonly string[]).includes(values.district)) return fail("Дүүргээ сонгоно уу.");
   if (values.details.length < 5) return fail("Барааг авах хаягаа дэлгэрэнгүй бичнэ үү.");
 
+  const geo = parseLatLng(fd.get("lat"), fd.get("lng"));
   let logoUrl: string | null | undefined = undefined;
   const logo = fd.get("logo");
   if (logo instanceof File && logo.size > 0) {
@@ -43,8 +45,8 @@ export async function updateShop(_prev: SettingsState, fd: FormData): Promise<Se
       facebookPageUrl: values.facebookPageUrl || null,
       ...(logoUrl !== undefined ? { logoUrl } : {}),
       pickupAddress: shop.pickupAddressId
-        ? { update: { district: values.district, khoroo: values.khoroo || null, details: values.details } }
-        : { create: { district: values.district, khoroo: values.khoroo || null, details: values.details } },
+        ? { update: { district: values.district, khoroo: values.khoroo || null, details: values.details, lat: geo?.lat ?? null, lng: geo?.lng ?? null } }
+        : { create: { district: values.district, khoroo: values.khoroo || null, details: values.details, lat: geo?.lat ?? null, lng: geo?.lng ?? null } },
     },
   });
   revalidatePath("/settings");

@@ -8,6 +8,7 @@ import { DISTRICTS } from "@/lib/districts";
 import { deliveryFeeFor } from "@/lib/delivery-fee";
 import { notifyOrder } from "@/lib/notify";
 import { getCurrentUser } from "@/lib/auth";
+import { parseLatLng } from "@/lib/geo";
 
 export type CheckoutState = { error?: string; values?: Record<string, string> };
 type CartLine = { productId: string; qty: number };
@@ -31,6 +32,7 @@ export async function placeOrder(_prev: CheckoutState, formData: FormData): Prom
     note: str(formData, "note"),
   };
   const fail = (error: string): CheckoutState => ({ error, values });
+  const geo = parseLatLng(formData.get("lat"), formData.get("lng")); // газрын зураг дээр заасан цэг (заавал биш)
 
   const phone = normalizeMongolianPhone(values.phone);
   if (values.name.length < 2) return fail("Нэрээ оруулна уу.");
@@ -80,7 +82,7 @@ export async function placeOrder(_prev: CheckoutState, formData: FormData): Prom
           create: { shopId: g.shopId, phone, name: values.name },
         });
         const address = await tx.address.create({
-          data: { customerId: customer.id, district: values.district, khoroo: values.khoroo || null, details: values.details },
+          data: { customerId: customer.id, district: values.district, khoroo: values.khoroo || null, details: values.details, lat: geo?.lat ?? null, lng: geo?.lng ?? null },
         });
         const subtotal = g.items.reduce((n, i) => n + i.unitPrice * i.quantity, 0);
         const data: Prisma.OrderCreateInput = {

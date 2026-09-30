@@ -23,6 +23,8 @@ export default async function SettingsPage() {
               khoroo: shop.pickupAddress?.khoroo ?? "",
               details: shop.pickupAddress?.details ?? "",
               logoUrl: shop.logoUrl,
+              lat: shop.pickupAddress?.lat ?? null,
+              lng: shop.pickupAddress?.lng ?? null,
             }}
           />
         </section>

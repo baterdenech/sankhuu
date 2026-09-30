@@ -64,6 +64,7 @@ import { redirect } from "next/navigation";
 import { normalizeMongolianPhone } from "@/lib/phone";
 import { DISTRICTS } from "@/lib/districts";
 import { deliveryFeeFor } from "@/lib/delivery-fee";
+import { parseLatLng } from "@/lib/geo";
 
 export type ManualOrderState = { error?: string; values?: Record<string, string> };
 type Line = { productId: string; qty: number };
@@ -109,7 +110,8 @@ export async function createManualOrder(_prev: ManualOrderState, fd: FormData): 
         if (r.count === 0) throw new Error(`stock:${it.name}`);
       }
       const customer = await tx.customer.upsert({ where: { shopId_phone: { shopId: shop.id, phone } }, update: { name: values.name }, create: { shopId: shop.id, phone, name: values.name } });
-      const address = await tx.address.create({ data: { customerId: customer.id, district: values.district, khoroo: values.khoroo || null, details: values.details } });
+      const geo = parseLatLng(fd.get("lat"), fd.get("lng"));
+      const address = await tx.address.create({ data: { customerId: customer.id, district: values.district, khoroo: values.khoroo || null, details: values.details, lat: geo?.lat ?? null, lng: geo?.lng ?? null } });
       const order = await tx.order.create({
         data: {
           shop: { connect: { id: shop.id } },
