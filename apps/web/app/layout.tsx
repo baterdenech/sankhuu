@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { siteUrl } from "@/lib/og";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
   title: "Sankhuu",
   description: "Онлайн худалдаа, хүргэлтийн систем",
+  openGraph: { siteName: "Sankhuu", locale: "mn_MN", type: "website" },
 };
 
 export const viewport: Viewport = {

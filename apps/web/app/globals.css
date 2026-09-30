@@ -190,3 +190,14 @@ a.card:hover { border-color: var(--accent); }
 .status.d-DELIVERED { background: #dcfce7; color: #15803d; border-color: transparent; }
 .status.d-FAILED, .status.d-CANCELLED { background: #fee2e2; color: #b91c1c; border-color: transparent; }
 .status.d-RETURNED_TO_SHOP { background: var(--bg); color: var(--muted); }
+
+/* Тохиргоо: лого, хуваалцах холбоос */
+.logo-row { display: flex; gap: 14px; align-items: center; }
+.logo-drop { position: relative; width: 96px; height: 96px; border-radius: 50%; overflow: hidden; border: 2px dashed var(--border); background: var(--bg); display: grid; place-items: center; cursor: pointer; flex: none; }
+.logo-drop img { width: 100%; height: 100%; object-fit: cover; }
+.logo-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.logo-letter { font-size: 40px; font-weight: 700; color: var(--accent); }
+.logo-help { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.copy-link { display: flex; gap: 8px; align-items: center; margin: 8px 0 14px; }
+.copy-link code { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: var(--bg); border: 1px solid var(--border); padding: 8px 10px; border-radius: 8px; font-size: 13px; }
+.og-preview { width: 100%; border-radius: 12px; border: 1px solid var(--border); display: block; }

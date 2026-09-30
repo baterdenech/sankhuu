@@ -15,8 +15,11 @@ import { AskBar } from "../../../../_components/ask-bar";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const p = await prisma.product.findFirst({ where: { id, isActive: true }, select: { name: true, description: true, images: true } });
-  return p ? { title: `${p.name} · Sankhuu`, description: p.description ?? undefined, openGraph: { images: p.images[0] ? [p.images[0]] : [] } } : {};
+  const p = await prisma.product.findFirst({ where: { id, isActive: true }, select: { name: true, description: true, price: true, shop: { select: { name: true } } } });
+  if (!p) return {};
+  const description = `${p.price.toLocaleString("en-US")}₮ · ${p.shop.name}. ${p.description ?? "Sankhuu-гээр захиалаад хаалган дээрээ хүргүүлнэ."}`.slice(0, 200);
+  // og:image-ийг opengraph-image.tsx (файлын дүрэм) үүсгэнэ
+  return { title: `${p.name} · Sankhuu`, description, openGraph: { title: p.name, description, type: "website" } };
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string; id: string }> }) {

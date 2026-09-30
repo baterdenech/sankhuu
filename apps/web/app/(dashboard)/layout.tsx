@@ -21,6 +21,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <Link href="/orders">Захиалга</Link>
           <Link href="/products">Бараа</Link>
           <Link href="/deliveries">Хүргэлт</Link>
+          <Link href="/settings">Тохиргоо</Link>
           {admin && <Link href="/admin">Диспетчер →</Link>}
         </nav>
         <div className="account">
