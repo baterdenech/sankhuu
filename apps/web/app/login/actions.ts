@@ -42,7 +42,7 @@ function authErrorMessage(error: AuthError): string {
 // Зөвхөн апп доторх зам руу буцаана (open redirect-ээс сэргийлнэ)
 function safeNext(next: FormDataEntryValue | null): string {
   const value = typeof next === "string" ? next : "";
-  return /^\/(?![/\\])/.test(value) && !value.includes("\\") ? value : "/";
+  return /^\/(?![/\\])/.test(value) && !value.includes("\\") ? value : "/dashboard";
 }
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();

@@ -31,6 +31,6 @@ export async function setOrderStatus(orderId: string, next: OrderStatus) {
     }
   });
   revalidatePath("/orders");
-  revalidatePath("/");
+  revalidatePath("/dashboard");
   revalidatePath("/products");
 }

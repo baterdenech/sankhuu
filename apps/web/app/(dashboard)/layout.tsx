@@ -15,7 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {shop.name}
         </div>
         <nav>
-          <Link href="/">Хянах самбар</Link>
+          <Link href="/dashboard">Хянах самбар</Link>
           <Link href="/orders">Захиалга</Link>
           <Link href="/products">Бараа</Link>
           <Link href="/deliveries">Хүргэлт</Link>

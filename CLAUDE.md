@@ -27,6 +27,7 @@ Sankhuu нь Facebook худалдагчдад зориулсан захиалг
 - Хүргэлтийн статус өөрчлөгдөх бүрт `DeliveryEvent` бичнэ.
 - Нэвтрэлтийг Supabase Auth хариуцна: утас + SMS OTP, эсвэл нэвтрэх нэр + нууц үг (`lib/username.ts`: username ↔ `username@login.sankhuu.mn` техникийн имэйл; Supabase дээр Confirm email унтраалттай байх ёстой). `User.id` = Supabase `auth.users.id`; `phone`, `username` хоёулаа optional/unique. Утсыг E.164 (`+976…`) хэлбэрээр хадгална (`apps/web/lib/phone.ts`).
 - Хуудас / Server Action-д хэрэглэгчийг `requireUser()` (`apps/web/lib/auth.ts`)-ээр авна. `apps/web/proxy.ts` session-ийг шинэчилж, нэвтрээгүй бол `/login` руу шилжүүлнэ.
+- `/` нь харилцагчийн нээлттэй нүүр (бүх дэлгүүрийн бараа, хайлт); худалдагчийн самбар `/dashboard`. Нэвтэрсний дараа `/dashboard` руу шилжүүлнэ.
 - Хамгаалагдсан хуудсууд `app/(dashboard)/` дотор байрлана. Тэнд `requireShop()` (`apps/web/lib/shop.ts`) ашиглана: дэлгүүргүй хэрэглэгчийг `/onboarding` руу шилжүүлнэ.
 - Барааны зураг: `apps/web/lib/storage.ts` → Supabase Storage (`SUPABASE_SECRET_KEY`), локалд `.uploads/` + `app/uploads/[...path]/route.ts`. Клиент дээр `compress-image.ts` 1280px болгож багасгадаг.
 - AI: `apps/web/lib/ai/product.ts` — `@anthropic-ai/sdk`, `claude-opus-5-5`, structured output (zod). `ANTHROPIC_API_KEY` байхгүй бол `aiEnabled()` false буцааж UI гараар ажиллана.

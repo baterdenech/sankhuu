@@ -221,3 +221,22 @@ a.card:hover { border-color: var(--accent); }
 .tab { flex: 1; text-align: center; padding: 8px; border-radius: 7px; font-size: 14px; font-weight: 600; color: var(--muted); }
 .tab.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
 .small a { color: var(--accent); text-decoration: underline; }
+
+/* Нүүр хуудас */
+.hero { text-align: center; padding: 28px 0 20px; }
+.hero h1 { font-size: 26px; margin: 0 0 8px; line-height: 1.2; }
+.hero p { margin: 0; color: var(--muted); font-size: 15px; }
+@media (min-width: 720px) { .hero { padding: 48px 0 28px; } .hero h1 { font-size: 36px; } }
+.home-search { display: flex; gap: 8px; margin-bottom: 14px; }
+.home-search input { flex: 1; font: inherit; font-size: 16px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); min-width: 0; }
+.home-search input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.section-title { font-size: 17px; margin: 20px 0 12px; }
+.sf-product-shop { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.shop-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.shop-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+.shop-card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.shop-card .sf-avatar { width: 40px; height: 40px; font-size: 18px; }
+.shop-card-body { display: flex; flex-direction: column; }
+.seller-cta { margin: 40px 0 8px; padding: 24px 20px; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+.seller-cta h2 { margin: 0 0 8px; font-size: 20px; }
+.seller-cta p { margin: 0 auto 16px; max-width: 520px; color: var(--muted); }

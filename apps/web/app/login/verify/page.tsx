@@ -18,7 +18,7 @@ export default async function VerifyPage({
       <p className="muted">
         <strong>{formatPhone(phone)}</strong> дугаарт илгээсэн кодыг оруулна уу.
       </p>
-      <CodeForm phone={phone} next={params.next ?? "/"} />
+      <CodeForm phone={phone} next={params.next ?? "/dashboard"} />
       <p className="muted small">
         <Link href="/login">Дугаараа солих / кодыг дахин авах</Link>
       </p>

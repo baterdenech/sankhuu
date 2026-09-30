@@ -34,7 +34,7 @@ export async function createShop(_prev: FormState, formData: FormData): Promise<
   if (details.length < 5) return fail("Барааг авах хаягаа дэлгэрэнгүй бичнэ үү (байр, орц, тоот).");
 
   const existing = await prisma.shopMember.findFirst({ where: { userId: user.id } });
-  if (existing) redirect("/");
+  if (existing) redirect("/dashboard");
 
   const base = slugify(name);
   const taken = await prisma.shop.findMany({ where: { slug: { startsWith: base } }, select: { slug: true } });
@@ -55,5 +55,5 @@ export async function createShop(_prev: FormState, formData: FormData): Promise<
     prisma.user.update({ where: { id: user.id }, data: { role: "SELLER" } }),
   ]);
 
-  redirect("/");
+  redirect("/dashboard");
 }

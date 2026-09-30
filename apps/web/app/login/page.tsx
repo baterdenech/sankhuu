@@ -25,7 +25,7 @@ export default async function LoginPage({
       {error === "inactive" && <p className="form-error">Таны эрх идэвхгүй байна. Админд хандана уу.</p>}
       {byPassword ? (
         <>
-          <PasswordForm next={next ?? "/"} />
+          <PasswordForm next={next ?? "/dashboard"} />
           <p className="muted small">
             Бүртгэлгүй юу? <Link href={`/login/register?${q.slice(1)}`}>Бүртгүүлэх</Link>
           </p>
@@ -33,7 +33,7 @@ export default async function LoginPage({
       ) : (
         <>
           <p className="muted">Утасны дугаараа оруулахад баталгаажуулах код SMS-ээр ирнэ.</p>
-          <PhoneForm next={next ?? "/"} />
+          <PhoneForm next={next ?? "/dashboard"} />
         </>
       )}
     </>

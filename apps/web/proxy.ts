@@ -25,14 +25,15 @@ export async function proxy(request: NextRequest) {
   const isAuthed = Boolean(data?.claims);
   const { pathname, search } = request.nextUrl;
   const isLoginPage = pathname === "/login" || pathname.startsWith("/login/");
+  const isPublic = pathname === "/" || isLoginPage;
 
-  if (!isAuthed && !isLoginPage) {
+  if (!isAuthed && !isPublic) {
     const loginUrl = new URL("/login", request.url);
-    if (pathname !== "/") loginUrl.searchParams.set("next", pathname + search);
+    if (pathname !== "/dashboard") loginUrl.searchParams.set("next", pathname + search);
     return redirectWithCookies(loginUrl, response);
   }
   if (isAuthed && isLoginPage) {
-    return redirectWithCookies(new URL("/", request.url), response);
+    return redirectWithCookies(new URL("/dashboard", request.url), response);
   }
   return response;
 }

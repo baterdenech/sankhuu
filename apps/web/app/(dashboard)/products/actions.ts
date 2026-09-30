@@ -70,7 +70,7 @@ export async function createProduct(_prev: FormState, formData: FormData): Promi
     data: { ...fields.data, shopId: shop.id, images: imageUrl ? [imageUrl] : [] },
   });
   revalidatePath("/products");
-  revalidatePath("/");
+  revalidatePath("/dashboard");
   redirect("/products");
 }
 
@@ -100,7 +100,7 @@ export async function archiveProduct(id: string) {
   const { shop } = await requireShop();
   await prisma.product.updateMany({ where: { id, shopId: shop.id }, data: { isActive: false } });
   revalidatePath("/products");
-  revalidatePath("/");
+  revalidatePath("/dashboard");
   redirect("/products");
 }
 
@@ -112,5 +112,5 @@ export async function adjustStock(id: string, delta: number) {
     UPDATE "Product" SET "stock" = GREATEST(0, "stock" + ${d}), "updatedAt" = now()
     WHERE "id" = ${id} AND "shopId" = ${shop.id}`;
   revalidatePath("/products");
-  revalidatePath("/");
+  revalidatePath("/dashboard");
 }

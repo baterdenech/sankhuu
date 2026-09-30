@@ -7,7 +7,7 @@ import { ShopForm } from "./shop-form";
 export default async function OnboardingPage() {
   const user = await requireUser();
   const existing = await prisma.shopMember.findFirst({ where: { userId: user.id } });
-  if (existing) redirect("/");
+  if (existing) redirect("/dashboard");
 
   return (
     <div className="auth-page">
