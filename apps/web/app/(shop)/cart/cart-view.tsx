@@ -12,11 +12,13 @@ import { arrivalLabel } from "../_components/catalog-meta";
 import { placeOrder, type CheckoutState } from "./actions";
 
 // Coupang маягийн сагс: "Бүгдийг сонгох" + мөр бүрт checkbox, дэлгүүр бүрээр бүлэглэж хүргэлтийн хөлс, доор наалддаг "Захиалах (n)"
-export function CartView() {
+export type CheckoutPrefill = { name: string; phone: string; district: string; khoroo: string; details: string };
+
+export function CartView({ prefill }: { prefill?: CheckoutPrefill | null }) {
   const cart = useCart();
   const [state, formAction, pending] = useActionState<CheckoutState, FormData>(placeOrder, {});
-  const v = state.values ?? {};
-  const [district, setDistrict] = useState("");
+  const v: Record<string, string> = state.values ?? prefill ?? {};
+  const [district, setDistrict] = useState(prefill?.district ?? "");
   // Сонгоогүй барааны id (анхдагчаар бүгд сонгогдсон тул "хасагдсан" жагсаалт хадгална)
   const [unchecked, setUnchecked] = useState<Set<string>>(() => new Set());
   useEffect(() => {

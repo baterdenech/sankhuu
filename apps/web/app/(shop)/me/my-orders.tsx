@@ -18,12 +18,12 @@ const STEPS = [
   { key: "done", label: "Хүргэгдсэн", Icon: CheckIcon, statuses: ["DELIVERED"] },
 ] as const;
 
-export function MyOrders() {
+export function MyOrders({ loggedIn = false }: { loggedIn?: boolean }) {
   const [rows, setRows] = useState<Row[] | null>(null);
 
   useEffect(() => {
     const saved = readSavedOrders();
-    if (saved.length === 0) return setRows([]);
+    if (saved.length === 0 && !loggedIn) return setRows([]);
     getMyOrders(saved.map((s) => ({ number: s.number, phone: s.phone }))).then(setRows);
   }, []);
 
@@ -41,8 +41,8 @@ export function MyOrders() {
         <span className="empty-icon">
           <BoxIcon size={30} />
         </span>
-        <p>Энэ төхөөрөмжөөс өгсөн захиалга алга.</p>
-        <p className="muted small-text">Захиалга өгөхөд энд түүх нь хадгалагдана.</p>
+        <p>{loggedIn ? "Захиалга алга." : "Энэ төхөөрөмжөөс өгсөн захиалга алга."}</p>
+        <p className="muted small-text">{loggedIn ? "Захиалга өгөхөд энд түүх нь хадгалагдана." : "Нэвтэрвэл бүх төхөөрөмжийн захиалга харагдана."}</p>
         <Link href="/" className="btn primary">
           Бараа үзэх
         </Link>

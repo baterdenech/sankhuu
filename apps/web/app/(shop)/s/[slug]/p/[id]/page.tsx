@@ -12,6 +12,7 @@ import { Gallery } from "./gallery";
 import { PdpTabs } from "./pdp-tabs";
 import { ShareButton } from "../../../../_components/share-button";
 import { AskBar } from "../../../../_components/ask-bar";
+import { HeartButton } from "../../../../_components/favorites";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -49,6 +50,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         backHref={`/s/${slug}`}
         right={
           <>
+            <HeartButton productId={product.id} size={22} className="topbar-heart" />
             <ShareButton title={product.name} text={`${product.name} · ${product.price.toLocaleString("en-US")}₮`} />
             <Link href="/cart" className="topbar-cart" aria-label="Сагс">
               <CartIcon />

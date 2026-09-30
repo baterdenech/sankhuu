@@ -9,9 +9,9 @@ export default async function OnboardingPage() {
   const user = await requireUser();
   const existing = await prisma.shopMember.findFirst({ where: { userId: user.id } });
   if (existing) redirect("/dashboard");
-  // Жолооч, админ дэлгүүр бүртгэх шаардлагагүй
+  // Жолооч, админ дэлгүүр бүртгэх шаардлагагүй (худалдан авагч дэлгүүр нээж болно)
   const home = await roleHome(user);
-  if (home !== "/dashboard") redirect(home);
+  if (home === "/admin" || home === "/driver") redirect(home);
 
   return (
     <div className="auth-page">

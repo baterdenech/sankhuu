@@ -7,6 +7,7 @@ import { normalizeMongolianPhone } from "@/lib/phone";
 import { DISTRICTS } from "@/lib/districts";
 import { deliveryFeeFor } from "@/lib/delivery-fee";
 import { notifyOrder } from "@/lib/notify";
+import { getCurrentUser } from "@/lib/auth";
 
 export type CheckoutState = { error?: string; values?: Record<string, string> };
 type CartLine = { productId: string; qty: number };
@@ -54,6 +55,7 @@ export async function placeOrder(_prev: CheckoutState, formData: FormData): Prom
   const noPickup = products.find((p) => !p.shop.pickupAddress);
   if (noPickup) return fail(`"${noPickup.shop.name}" дэлгүүр хүргэлтийн тохиргоогоо хийгээгүй байна.`);
 
+  const user = await getCurrentUser(); // нэвтэрсэн бол захиалга бүртгэлтэй нь холбогдоно
   // Дэлгүүрээр бүлэглэнэ
   const byShop = new Map<string, { shopId: string; pickupAddressId: string; items: { productId: string; name: string; unitPrice: number; quantity: number }[] }>();
   for (const l of lines) {
@@ -85,6 +87,7 @@ export async function placeOrder(_prev: CheckoutState, formData: FormData): Prom
           shop: { connect: { id: g.shopId } },
           customer: { connect: { id: customer.id } },
           source: "OTHER",
+          ...(user ? { user: { connect: { id: user.id } } } : {}),
           subtotal,
           deliveryFee,
           total: subtotal + deliveryFee,
@@ -124,15 +127,23 @@ export async function placeOrder(_prev: CheckoutState, formData: FormData): Prom
 // "Миний" хуудас: төхөөрөмж дээр хадгалсан (дугаар, утас) хосуудаар захиалгуудыг татна
 export async function getMyOrders(keys: { number: number; phone: string }[]) {
   const valid = keys.filter((k) => Number.isInteger(k.number) && typeof k.phone === "string").slice(0, 50);
-  if (valid.length === 0) return [];
+  const user = await getCurrentUser();
+  if (valid.length === 0 && !user) return [];
+  const deviceWhere = valid.map((k) => ({ number: k.number, customer: { phone: k.phone } }));
+  if (user && deviceWhere.length) {
+    // Төхөөрөмж дээр хадгалсан (дугаар+утас нь баталгаа) захиалгуудыг бүртгэлтэй нь холбоно
+    await prisma.order.updateMany({ where: { userId: null, OR: deviceWhere }, data: { userId: user.id } });
+  }
   const orders = await prisma.order.findMany({
-    where: { OR: valid.map((k) => ({ number: k.number, customer: { phone: k.phone } })) },
+    where: { OR: [...deviceWhere, ...(user ? [{ userId: user.id }] : [])] },
     include: {
       shop: { select: { name: true, slug: true } },
+      customer: { select: { phone: true } },
       items: { include: { product: { select: { images: true, category: true } } } },
       reviews: { select: { productId: true, rating: true } },
     },
     orderBy: { createdAt: "desc" },
+    take: 100,
   });
   return orders.map((o) => ({
     number: o.number,
@@ -149,6 +160,25 @@ export async function getMyOrders(keys: { number: number; phone: string }[]) {
       category: i.product?.category ?? null,
       rating: o.reviews.find((r) => r.productId === i.productId)?.rating ?? null,
     })),
-    phone: valid.find((k) => k.number === o.number)!.phone,
+    phone: o.customer.phone,
   }));
+}
+
+// Нэвтэрсэн худалдан авагчийн сүүлийн захиалгаас хүргэлтийн мэдээллийг урьдчилан бөглөнө
+export async function lastCheckoutInfo() {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const o = await prisma.order.findFirst({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+    include: { customer: { select: { name: true, phone: true } }, delivery: { include: { dropoffAddress: true } } },
+  });
+  const a = o?.delivery?.dropoffAddress;
+  return {
+    name: o?.customer.name ?? user.name ?? "",
+    phone: (o?.customer.phone ?? user.phone ?? "").replace(/^\+976/, ""),
+    district: a?.district ?? "",
+    khoroo: a?.khoroo ?? "",
+    details: a?.details ?? "",
+  };
 }
