@@ -22,9 +22,14 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
     <>
       <div className="page-head">
         <h1>Бараа</h1>
-        <Link href="/products/new" className="btn primary">
-          + Бараа нэмэх
-        </Link>
+        <div className="actions">
+          <Link href="/products/bulk" className="btn">
+            Олноор нэмэх
+          </Link>
+          <Link href="/products/new" className="btn primary">
+            + Бараа нэмэх
+          </Link>
+        </div>
       </div>
 
       <form className="toolbar" action="/products">

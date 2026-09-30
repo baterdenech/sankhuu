@@ -209,3 +209,31 @@ a.card:hover { border-color: var(--accent); }
 .order-summary { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); font-size: 14px; }
 .order-summary > div { display: flex; justify-content: space-between; }
 .order-summary .total { font-weight: 700; border-top: 1px solid var(--border); padding-top: 8px; margin-top: 2px; }
+
+/* Олноор нэмэх */
+.bulk { display: flex; flex-direction: column; gap: 14px; max-width: 760px; }
+.bulk-drop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 26px 16px; border: 2px dashed var(--border); border-radius: 12px; background: var(--surface); text-align: center; cursor: pointer; }
+.bulk-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.bulk-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.bulk-row { display: grid; grid-template-columns: 96px 1fr 24px; gap: 12px; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; align-items: start; }
+.bulk-row.error { border-color: #fca5a5; }
+.bulk-thumb { width: 96px; height: 96px; object-fit: cover; border-radius: 8px; background: var(--bg); }
+.bulk-body { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.bulk-body input, .bulk-body select, .bulk-body textarea { font: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); width: 100%; min-width: 0; }
+.bulk-body textarea { resize: vertical; }
+.bulk-fields { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 8px; }
+.bulk-remove { font-size: 22px; line-height: 1; }
+.bulk-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; position: sticky; bottom: 0; padding: 12px 0; background: var(--bg); }
+@media (max-width: 600px) { .bulk-fields { grid-template-columns: 1fr 1fr; } .bulk-row { grid-template-columns: 72px 1fr 24px; } .bulk-thumb { width: 72px; height: 72px; } }
+
+/* AI дүгнэлт */
+.insights { margin-top: 20px; display: flex; flex-direction: column; gap: 14px; }
+.insights-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.insights-summary { margin: 0; font-size: 15px; line-height: 1.55; padding: 12px 14px; border-radius: 10px; background: var(--bg); }
+.insights-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 720px) { .insights-cols { grid-template-columns: 1fr; } }
+.insights-cols h3 { margin: 0 0 8px; font-size: 14px; color: var(--muted); }
+.insights-cols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.insights-cols li { display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.insights-cols li span { color: var(--muted); }
+.insights-cols a { color: var(--accent); text-decoration: underline; }
