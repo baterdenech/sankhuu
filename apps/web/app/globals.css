@@ -201,3 +201,11 @@ a.card:hover { border-color: var(--accent); }
 .copy-link { display: flex; gap: 8px; align-items: center; margin: 8px 0 14px; }
 .copy-link code { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: var(--bg); border: 1px solid var(--border); padding: 8px 10px; border-radius: 8px; font-size: 13px; }
 .og-preview { width: 100%; border-radius: 12px; border: 1px solid var(--border); display: block; }
+
+/* Гар захиалга */
+.line-row { display: grid; grid-template-columns: 1fr 72px 96px 24px; gap: 8px; align-items: center; }
+.line-row select, .line-row input { font: inherit; font-size: 14px; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); min-width: 0; }
+.line-sum { font-size: 14px; font-weight: 600; text-align: right; }
+.order-summary { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); font-size: 14px; }
+.order-summary > div { display: flex; justify-content: space-between; }
+.order-summary .total { font-weight: 700; border-top: 1px solid var(--border); padding-top: 8px; margin-top: 2px; }

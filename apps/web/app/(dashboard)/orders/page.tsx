@@ -27,9 +27,14 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
     <>
       <div className="page-head">
         <h1>Захиалга</h1>
-        <Link href={`/s/${shop.slug}`} target="_blank" className="btn">
-          Дэлгүүрээ үзэх ↗
-        </Link>
+        <div className="actions">
+          <Link href={`/s/${shop.slug}`} target="_blank" className="btn">
+            Дэлгүүрээ үзэх ↗
+          </Link>
+          <Link href="/orders/new" className="btn primary">
+            + Захиалга бүртгэх
+          </Link>
+        </div>
       </div>
       <div className="toolbar">
         {TABS.map((t) => (

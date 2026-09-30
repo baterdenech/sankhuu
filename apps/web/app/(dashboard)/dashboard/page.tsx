@@ -35,6 +35,9 @@ export default async function DashboardPage() {
           <Link href={`/s/${shop.slug}`} target="_blank" className="btn">
             Дэлгүүрээ үзэх ↗
           </Link>
+          <Link href="/orders/new" className="btn">
+            + Захиалга бүртгэх
+          </Link>
           <Link href="/products/new" className="btn primary">
             + Бараа нэмэх
           </Link>
