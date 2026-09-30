@@ -25,7 +25,11 @@ export async function proxy(request: NextRequest) {
   const isAuthed = Boolean(data?.claims);
   const { pathname, search } = request.nextUrl;
   const isLoginPage = pathname === "/login" || pathname.startsWith("/login/");
-  const isPublic = pathname === "/" || isLoginPage;
+  // Худалдан авагчийн апп нэвтрэлт шаардахгүй
+  const isPublic =
+    isLoginPage ||
+    pathname === "/" ||
+    ["/s/", "/categories", "/search", "/cart", "/me", "/orders/", "/api/health"].some((p) => pathname === p.replace(/\/$/, "") || pathname.startsWith(p));
 
   if (!isAuthed && !isPublic) {
     const loginUrl = new URL("/login", request.url);
