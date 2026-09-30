@@ -84,6 +84,7 @@ model Product {
   description     String?
   price           Int // төгрөг
   stock           Int      @default(0)
+  category        String? // AI-ийн санал болгосон эсвэл худалдагчийн сонгосон ангилал
   sku             String?
   images          String[]
   facebookPostUrl String? // Барааг FB пост линкээр оруулсан бол

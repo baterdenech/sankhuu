@@ -1,15 +1,18 @@
 import Link from "next/link";
-import { requireUser } from "@/lib/auth";
+import { requireShop } from "@/lib/shop";
 import { formatPhone } from "@/lib/phone";
 import { signOut } from "../login/actions";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireUser();
+  const { user, shop } = await requireShop();
 
   return (
     <div className="shell">
       <aside className="sidebar">
         <div className="brand">Sankhuu</div>
+        <div className="shop-name" title={shop.name}>
+          {shop.name}
+        </div>
         <nav>
           <Link href="/">Хянах самбар</Link>
           <Link href="/orders">Захиалга</Link>

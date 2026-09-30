@@ -23,3 +23,6 @@ export const deliveryStatusLabel = {
 export function formatMNT(amount: number) {
   return `${amount.toLocaleString("en-US")}₮`;
 }
+
+// Үлдэгдэл энэ тооноос бага буюу тэнцүү бол "дуусч байна" гэж анхааруулна
+export const LOW_STOCK = 3;

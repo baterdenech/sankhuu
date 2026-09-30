@@ -40,6 +40,8 @@
    - `DATABASE_URL`: Transaction pooler URL (порт 6543)
    - `NEXT_PUBLIC_SUPABASE_URL`: `https://[PROJECT_REF].supabase.co`
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Publishable key, эсвэл оронд нь `NEXT_PUBLIC_SUPABASE_ANON_KEY` (anon key)
+   - `SUPABASE_SECRET_KEY`: барааны зураг Supabase Storage-д хадгалахад (integration нэмсэн бол аль хэдийн байгаа). `product-images` bucket-ийг апп өөрөө үүсгэнэ.
+   - `ANTHROPIC_API_KEY`: зурагнаас барааны нэр, тайлбар гаргах AI-д. [console.anthropic.com](https://console.anthropic.com) → API Keys. Байхгүй бол AI хэсэг унтарч, бараа гараар бүртгэгдэнэ.
 
    Vercel-ийн **Supabase integration** (Storage → Supabase) ашигласан бол `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` автоматаар нэмэгддэг бөгөөд код тэдгээрийг ч таньдаг.
    Энэ тохиолдолд зөвхөн `DATABASE_URL`-г гараар нэмнэ (`POSTGRES_PRISMA_URL`-тай ижил, transaction pooler 6543).

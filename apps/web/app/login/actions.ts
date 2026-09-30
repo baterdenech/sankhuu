@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ensureUser } from "@/lib/auth";
 import { normalizeMongolianPhone } from "@/lib/phone";
 
-export type FormState = { error?: string };
+export type FormState = { error?: string; phone?: string };
 
 function authErrorMessage(error: AuthError): string {
   switch (error.code) {
@@ -31,12 +31,13 @@ function safeNext(next: FormDataEntryValue | null): string {
 }
 
 export async function sendCode(_prev: FormState, formData: FormData): Promise<FormState> {
-  const phone = normalizeMongolianPhone(String(formData.get("phone") ?? ""));
-  if (!phone) return { error: "Утасны дугаараа зөв оруулна уу (8 оронтой)." };
+  const typed = String(formData.get("phone") ?? "");
+  const phone = normalizeMongolianPhone(typed);
+  if (!phone) return { error: "Утасны дугаараа зөв оруулна уу (8 оронтой).", phone: typed };
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({ phone });
-  if (error) return { error: authErrorMessage(error) };
+  if (error) return { error: authErrorMessage(error), phone: typed };
 
   const params = new URLSearchParams({ phone, next: safeNext(formData.get("next")) });
   redirect(`/login/verify?${params}`);

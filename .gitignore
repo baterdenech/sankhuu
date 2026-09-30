@@ -9,3 +9,5 @@ dist/
 packages/db/src/generated/
 *.tsbuildinfo
 next-env.d.ts
+apps/web/.uploads/
+apps/web/public/uploads/

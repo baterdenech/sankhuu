@@ -19,6 +19,7 @@ export function PhoneForm({ next }: { next: string }) {
           inputMode="numeric"
           autoComplete="tel-national"
           placeholder="9911 2233"
+          defaultValue={state.phone ?? ""}
           maxLength={9}
           required
           autoFocus

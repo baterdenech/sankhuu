@@ -1,25 +1,56 @@
-import { formatMNT } from "@/lib/labels";
+import Link from "next/link";
+import { prisma } from "@sankhuu/db";
+import { requireShop } from "@/lib/shop";
+import { formatMNT, LOW_STOCK } from "@/lib/labels";
 
-// TODO: Prisma-аас бодит тоо татах
-const stats = [
-  { label: "Өнөөдрийн захиалга", value: "0" },
-  { label: "Хүргэлтэд гарсан", value: "0" },
-  { label: "Өнөөдрийн борлуулалт", value: formatMNT(0) },
-  { label: "Шилжүүлэх дүн (COD)", value: formatMNT(0) },
-];
+export default async function DashboardPage() {
+  const { shop } = await requireShop();
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
 
-export default function DashboardPage() {
+  const [productCount, lowStock, todayOrders, todaySales, inDelivery] = await Promise.all([
+    prisma.product.count({ where: { shopId: shop.id, isActive: true } }),
+    prisma.product.count({ where: { shopId: shop.id, isActive: true, stock: { lte: LOW_STOCK } } }),
+    prisma.order.count({ where: { shopId: shop.id, createdAt: { gte: startOfDay }, status: { not: "CANCELLED" } } }),
+    prisma.order.aggregate({
+      _sum: { subtotal: true },
+      where: { shopId: shop.id, createdAt: { gte: startOfDay }, status: { not: "CANCELLED" } },
+    }),
+    prisma.order.count({ where: { shopId: shop.id, status: "IN_DELIVERY" } }),
+  ]);
+
+  const stats = [
+    { label: "Өнөөдрийн захиалга", value: String(todayOrders), href: "/orders" },
+    { label: "Өнөөдрийн борлуулалт", value: formatMNT(todaySales._sum.subtotal ?? 0), href: "/orders" },
+    { label: "Хүргэлтэд гарсан", value: String(inDelivery), href: "/deliveries" },
+    { label: "Идэвхтэй бараа", value: String(productCount), href: "/products" },
+    { label: "Дуусч буй бараа", value: String(lowStock), href: "/products?filter=low", warn: lowStock > 0 },
+  ];
+
   return (
     <>
-      <h1>Хянах самбар</h1>
+      <div className="page-head">
+        <h1>Хянах самбар</h1>
+        <Link href="/products/new" className="btn primary">
+          + Бараа нэмэх
+        </Link>
+      </div>
       <div className="cards">
         {stats.map((s) => (
-          <div key={s.label} className="card">
+          <Link key={s.label} href={s.href} className={`card${s.warn ? " warn" : ""}`}>
             <div className="label">{s.label}</div>
             <div className="value">{s.value}</div>
-          </div>
+          </Link>
         ))}
       </div>
+      {productCount === 0 && (
+        <div className="empty" style={{ marginTop: 16 }}>
+          <p>Эхний бараагаа нэмээрэй. Зургийг нь оруулахад нэр, тайлбарыг AI бөглөж өгнө.</p>
+          <Link href="/products/new" className="btn primary">
+            Эхний бараагаа нэмэх
+          </Link>
+        </div>
+      )}
     </>
   );
 }

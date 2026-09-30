@@ -27,6 +27,10 @@ Sankhuu нь Facebook худалдагчдад зориулсан захиалг
 - Хүргэлтийн статус өөрчлөгдөх бүрт `DeliveryEvent` бичнэ.
 - Нэвтрэлтийг Supabase Auth (утас + SMS OTP) хариуцна. `User.id` = Supabase `auth.users.id`, утсыг E.164 (`+976…`) хэлбэрээр хадгална (`apps/web/lib/phone.ts`).
 - Хуудас / Server Action-д хэрэглэгчийг `requireUser()` (`apps/web/lib/auth.ts`)-ээр авна. `apps/web/proxy.ts` session-ийг шинэчилж, нэвтрээгүй бол `/login` руу шилжүүлнэ.
-- Хамгаалагдсан хуудсууд `app/(dashboard)/` дотор байрлана.
+- Хамгаалагдсан хуудсууд `app/(dashboard)/` дотор байрлана. Тэнд `requireShop()` (`apps/web/lib/shop.ts`) ашиглана: дэлгүүргүй хэрэглэгчийг `/onboarding` руу шилжүүлнэ.
+- Барааны зураг: `apps/web/lib/storage.ts` → Supabase Storage (`SUPABASE_SECRET_KEY`), локалд `.uploads/` + `app/uploads/[...path]/route.ts`. Клиент дээр `compress-image.ts` 1280px болгож багасгадаг.
+- AI: `apps/web/lib/ai/product.ts` — `@anthropic-ai/sdk`, `claude-opus-5-5`, structured output (zod). `ANTHROPIC_API_KEY` байхгүй бол `aiEnabled()` false буцааж UI гараар ажиллана.
+- Server Action-аас алдаа буцаахдаа оруулсан утгуудыг (`values`) хамт буцаана: React 19 форм reset хийдэг тул талбарууд хоосорно. `<select>`-д `key` өгнө.
+- Хажуугийн цэсний "Гарах" ч `type=submit` тул тестэд формын товчийг `.product-form button[type=submit]` гэх мэтээр нарийн сонгоно.
 - Шинэ хүснэгт нэмэх бүрт migration SQL-ийн төгсгөлд `ALTER TABLE "..." ENABLE ROW LEVEL SECURITY;` нэмнэ (Supabase Data API-аас хаах).
 - Мэдээллийн сантай зөвхөн серверээс (Server Component / Server Action / Route Handler) Prisma-аар холбогдоно. Supabase anon key-ээр хүснэгт рүү хандахгүй.
