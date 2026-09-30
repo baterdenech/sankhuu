@@ -29,7 +29,7 @@ export async function proxy(request: NextRequest) {
   const isPublic =
     isLoginPage ||
     pathname === "/" ||
-    ["/s/", "/categories", "/search", "/cart", "/me", "/orders/", "/reviews/", "/shops", "/api/health"].some((p) => pathname === p.replace(/\/$/, "") || pathname.startsWith(p));
+    ["/s/", "/categories", "/search", "/cart", "/me", "/orders/", "/reviews/", "/shops", "/api/health", "/api/assistant"].some((p) => pathname === p.replace(/\/$/, "") || pathname.startsWith(p));
 
   if (!isAuthed && !isPublic) {
     const loginUrl = new URL("/login", request.url);

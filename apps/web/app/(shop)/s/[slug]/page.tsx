@@ -5,6 +5,7 @@ import { formatPhone } from "@/lib/phone";
 import { TopBar } from "../../_components/top-bar";
 import { ProductCard } from "../../_components/product-card";
 import { soldCounts } from "../../_components/catalog";
+import { AskBar } from "../../_components/ask-bar";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const shop = await prisma.shop.findFirst({ where: { slug: (await params).slug, isActive: true }, select: { name: true } });
@@ -45,6 +46,8 @@ export default async function ShopPage({ params, searchParams }: { params: Promi
           {formatPhone(shop.phone)}
         </a>
       </section>
+
+      <AskBar title={`${shop.name}-аас асуу`} text="Ямар бараа байгаа, аль нь тохирох вэ гэдгийг AI туслах хэлж өгнө" />
 
       {groups.length > 1 && (
         <nav className="chips scroll" aria-label="Ангилал">

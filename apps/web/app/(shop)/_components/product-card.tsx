@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ProductImage } from "./product-image";
 export { ProductImage };
-import { DELIVERY_PROMISE } from "./catalog-meta";
+import { RocketIcon } from "./icons";
+import { arrivalLabel } from "./catalog-meta";
 
 export type CardProduct = {
   id: string;
@@ -48,7 +49,8 @@ export function PriceBlock({ price, compareAtPrice, size = "sm" }: { price: numb
   );
 }
 
-export function Stars({ count, sum, size = "sm" }: { count?: number; sum?: number; size?: "sm" | "lg" }) {
+// Одтой үнэлгээ. Coupang картан дээр од + (тоо) л харуулдаг; дундаж тоог `showAvg`-аар нэмнэ (дэлгэрэнгүй хуудас).
+export function Stars({ count, sum, size = "sm", showAvg = size === "lg" }: { count?: number; sum?: number; size?: "sm" | "lg"; showAvg?: boolean }) {
   if (!count) return null;
   const avg = sum! / count;
   return (
@@ -56,34 +58,48 @@ export function Stars({ count, sum, size = "sm" }: { count?: number; sum?: numbe
       <span className="stars-bg" aria-hidden>
         ★★★★★<span className="stars-fg" style={{ width: `${(avg / 5) * 100}%` }}>★★★★★</span>
       </span>
-      <span className="stars-num">{avg.toFixed(1)}</span>
-      <span className="stars-count">({count})</span>
+      {showAvg && <span className="stars-num">{avg.toFixed(1)}</span>}
+      <span className="stars-count">({count.toLocaleString("en-US")})</span>
+    </span>
+  );
+}
+
+// "Sankhuu хүргэлт" шошго (Coupang-ийн 로켓배송 логотой адил байрлалд)
+export function RocketBadge() {
+  return (
+    <span className="rocket">
+      <RocketIcon />
+      Sankhuu хүргэлт
     </span>
   );
 }
 
 const NEW_DAYS = 7;
 
+// Барааны карт, Coupang анатоми: зураг → нэр → хямдрал/үнэ → хүргэлт (пуужин + хүрэх өдөр) → од (тоо) → дэлгүүр
 export function ProductCard({ p, showShop = true }: { p: CardProduct; showShop?: boolean }) {
   const isNew = p.createdAt ? Date.now() - p.createdAt.getTime() < NEW_DAYS * 86400000 : false;
+  const pct = discountPct(p.price, p.compareAtPrice);
   return (
     <Link href={`/s/${p.shop.slug}/p/${p.id}`} className={`pcard${p.stock === 0 ? " sold-out" : ""}`}>
       <div className="pcard-media">
         <ProductImage src={p.images[0]} alt={p.name} category={p.category} />
-        {p.stock === 0 && <span className="pcard-out">Дууссан</span>}
+        {p.stock === 0 ? <span className="pcard-out">Дууссан</span> : isNew && !pct ? <span className="pcard-tag">Шинэ</span> : null}
       </div>
       <div className="pcard-body">
         <div className="pcard-name">{p.name}</div>
         <PriceBlock price={p.price} compareAtPrice={p.compareAtPrice} />
-        <Stars count={p.ratingCount} sum={p.ratingSum} />
         <div className="pcard-delivery">
-          <span className="rocket">Sankhuu хүргэлт</span>
-          <span className="arrive">{DELIVERY_PROMISE}</span>
+          <RocketBadge />
+          <span className="arrive">{arrivalLabel()}</span>
         </div>
-        <div className="pcard-meta">
-          {showShop && <span className="pcard-shop">{p.shop.name}</span>}
-          {p.sold ? <span className="pcard-sold">{p.sold} зарагдсан</span> : isNew ? <span className="pcard-sold new">Шинэ</span> : null}
-        </div>
+        <Stars count={p.ratingCount} sum={p.ratingSum} />
+        {(showShop || p.sold) && (
+          <div className="pcard-meta">
+            {showShop && <span className="pcard-shop">{p.shop.name}</span>}
+            {p.sold ? <span className="pcard-sold">{p.sold} зарагдсан</span> : null}
+          </div>
+        )}
       </div>
     </Link>
   );
