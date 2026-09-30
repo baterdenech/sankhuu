@@ -18,7 +18,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
 
   const orders = await prisma.order.findMany({
     where: { shopId: shop.id, status: { in: current.statuses } },
-    include: { customer: true, items: true, delivery: { include: { dropoffAddress: true } } },
+    include: { customer: true, items: true, delivery: { include: { dropoffAddress: true, driver: { include: { user: { select: { name: true, username: true } } } } } } },
     orderBy: { createdAt: "desc" },
     take: 100,
   });
@@ -79,7 +79,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
                   <span>{formatMNT(o.total)}</span>
                 </li>
               </ul>
-              <OrderActions id={o.id} status={o.status} />
+              <OrderActions id={o.id} status={o.status} driverName={o.delivery?.driver ? (o.delivery.driver.user.name ?? o.delivery.driver.user.username) : null} />
             </li>
           ))}
         </ul>
