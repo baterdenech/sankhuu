@@ -49,6 +49,7 @@
    - `NEXT_PUBLIC_SUPABASE_URL`: `https://[PROJECT_REF].supabase.co`
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Publishable key, эсвэл оронд нь `NEXT_PUBLIC_SUPABASE_ANON_KEY` (anon key)
    - `SUPABASE_SECRET_KEY`: барааны зураг Supabase Storage-д хадгалахад (integration нэмсэн бол аль хэдийн байгаа). `product-images` bucket-ийг апп өөрөө үүсгэнэ.
+   - `SUPABASE_CA_CERT` (заавал биш): Project Settings → Database → SSL Configuration-оос татсан сертификатын агуулга. Өгвөл DB холболт сертификатаа бүрэн шалгана; өгөөгүй бол шифрлэлттэй ч CA шалгахгүй холбогдоно.
    - `ANTHROPIC_API_KEY`: зурагнаас барааны нэр, тайлбар гаргах AI-д. [console.anthropic.com](https://console.anthropic.com) → API Keys. Байхгүй бол AI хэсэг унтарч, бараа гараар бүртгэгдэнэ.
 
    Vercel-ийн **Supabase integration** (Storage → Supabase) ашигласан бол `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` автоматаар нэмэгддэг бөгөөд код тэдгээрийг ч таньдаг.
