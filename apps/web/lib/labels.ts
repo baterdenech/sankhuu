@@ -27,6 +27,18 @@ export const vehicleTypeLabel = {
   ON_FOOT: "Явган",
 } as const;
 
+export const paymentMethodLabel = {
+  CASH_ON_DELIVERY: "Хүргэлтийн үед",
+  PREPAID_TRANSFER: "Урьдчилж шилжүүлсэн",
+  QPAY: "QPay",
+} as const;
+
+export const paymentStatusLabel = {
+  UNPAID: "Төлөөгүй",
+  PAID: "Төлсөн",
+  REFUNDED: "Буцаасан",
+} as const;
+
 export const settlementStatusLabel = {
   PENDING: "Хүлээгдэж буй",
   PAID: "Төлсөн",
