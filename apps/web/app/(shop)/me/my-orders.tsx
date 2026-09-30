@@ -41,7 +41,24 @@ export function MyOrders() {
             <span className="muted small-text">
               #{o.number} · {new Date(o.createdAt).toLocaleDateString("mn-MN")}
             </span>
-            <div>{o.items.map((i) => `${i.name} × ${i.quantity}`).join(", ")}</div>
+            <ul className="my-items">
+              {o.items.map((i, idx) => (
+                <li key={idx}>
+                  <span>
+                    {i.name} × {i.quantity}
+                  </span>
+                  {o.status === "DELIVERED" && i.productId && (
+                    i.rating ? (
+                      <span className="rated">★ {i.rating}</span>
+                    ) : (
+                      <Link href={`/reviews/new?n=${o.number}&phone=${encodeURIComponent(o.phone)}&product=${i.productId}`} className="btn small outline">
+                        Үнэлгээ өгөх
+                      </Link>
+                    )
+                  )}
+                </li>
+              ))}
+            </ul>
             <strong>{formatMNT(o.total)}</strong>
           </div>
         </li>

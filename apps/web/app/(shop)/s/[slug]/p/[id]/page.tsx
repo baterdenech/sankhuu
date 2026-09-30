@@ -5,7 +5,7 @@ import { prisma } from "@sankhuu/db";
 import { TopBar } from "../../../../_components/top-bar";
 import { CartIcon, TruckIcon } from "../../../../_components/icons";
 import { CartBadge } from "../../../../_components/cart-badge";
-import { PriceBlock, ProductCard, ProductImage } from "../../../../_components/product-card";
+import { PriceBlock, ProductCard, ProductImage, Stars } from "../../../../_components/product-card";
 import { DELIVERY_FROM, DELIVERY_PROMISE, soldCounts } from "../../../../_components/catalog";
 import { BuyBar } from "./buy-bar";
 
@@ -20,10 +20,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const product = await prisma.product.findFirst({ where: { id, isActive: true, shop: { slug, isActive: true } }, include: { shop: true } });
   if (!product) notFound();
 
-  const [sold, more] = await Promise.all([
+  const [sold, more, reviews] = await Promise.all([
     soldCounts([product.id]),
     prisma.product.findMany({ where: { shopId: product.shopId, isActive: true, id: { not: product.id }, stock: { gt: 0 } }, orderBy: { createdAt: "desc" }, take: 6 }),
+    prisma.review.findMany({ where: { productId: product.id }, orderBy: { createdAt: "desc" }, take: 20 }),
   ]);
+  const dist = [5, 4, 3, 2, 1].map((star) => ({ star, n: reviews.filter((r) => r.rating === star).length }));
   const soldN = sold.get(product.id) ?? 0;
 
   return (
@@ -49,6 +51,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             {product.shop.name} ›
           </Link>
           <h1 className="pdp-name">{product.name}</h1>
+          {product.ratingCount > 0 && (
+            <a href="#reviews" className="pdp-rating">
+              <Stars count={product.ratingCount} sum={product.ratingSum} size="lg" /> <span className="muted small-text">сэтгэгдэл үзэх ›</span>
+            </a>
+          )}
           <div className="pdp-stats muted small-text">
             {soldN > 0 && <span>{soldN} зарагдсан</span>}
             {product.category && <span>{product.category}</span>}
@@ -83,6 +90,54 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </section>
         )}
 
+        <section className="pdp-section" id="reviews">
+          <h2>Үнэлгээ, сэтгэгдэл {product.ratingCount > 0 && <span className="muted">({product.ratingCount})</span>}</h2>
+          {product.ratingCount === 0 ? (
+            <p className="muted small-text">Одоогоор үнэлгээ алга. Худалдан авсны дараа та эхнийх нь болоорой.</p>
+          ) : (
+            <>
+              <div className="rating-summary">
+                <div className="rating-avg">
+                  <strong>{(product.ratingSum / product.ratingCount).toFixed(1)}</strong>
+                  <Stars count={product.ratingCount} sum={product.ratingSum} size="lg" />
+                </div>
+                <ul className="rating-dist">
+                  {dist.map((d) => (
+                    <li key={d.star}>
+                      <span>{d.star}★</span>
+                      <span className="bar">
+                        <span style={{ width: `${reviews.length ? (d.n / reviews.length) * 100 : 0}%` }} />
+                      </span>
+                      <span className="muted">{d.n}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <ul className="reviews">
+                {reviews.map((r) => (
+                  <li key={r.id} className="review">
+                    <div className="review-head">
+                      <Stars count={1} sum={r.rating} />
+                      <span className="muted small-text">
+                        {maskName(r.customerName)} · {r.createdAt.toLocaleDateString("mn-MN")}
+                      </span>
+                    </div>
+                    {r.comment && <p className="review-text">{r.comment}</p>}
+                    {r.images.length > 0 && (
+                      <div className="review-images">
+                        {r.images.map((src) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img key={src} src={src} alt="" loading="lazy" />
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </section>
+
         {more.length > 0 && (
           <section className="pdp-section">
             <h2>{product.shop.name} дэлгүүрийн бусад бараа</h2>
@@ -101,4 +156,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       />
     </>
   );
+}
+
+// "Болормаа" → "Б***"
+function maskName(name: string) {
+  return name ? name.slice(0, 1) + "***" : "Худалдан авагч";
 }

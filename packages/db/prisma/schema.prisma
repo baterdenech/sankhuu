@@ -87,6 +87,8 @@ model Product {
   description     String?
   price           Int // төгрөг
   compareAtPrice  Int? // Хямдралын өмнөх үнэ (зурсан үнэ); price-аас их бол хямдралын хувь харуулна
+  ratingCount     Int      @default(0) // Үнэлгээний тоо (Review үүсэхэд нэмэгдэнэ)
+  ratingSum       Int      @default(0) // Одны нийлбэр; дундаж = ratingSum / ratingCount
   stock           Int      @default(0)
   category        String? // AI-ийн санал болгосон эсвэл худалдагчийн сонгосон ангилал
   sku             String?
@@ -98,6 +100,7 @@ model Product {
 
   shop       Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
+  reviews    Review[]
 
   @@unique([shopId, sku])
   @@index([shopId, isActive])
@@ -192,6 +195,7 @@ model Order {
   customer Customer    @relation(fields: [customerId], references: [id])
   items    OrderItem[]
   delivery Delivery?
+  reviews  Review[]
 
   @@index([shopId, status])
   @@index([shopId, createdAt])
@@ -207,6 +211,28 @@ model OrderItem {
 
   order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+}
+
+// ─── Үнэлгээ, сэтгэгдэл ──────────────────────────────────────────────
+
+// Зөвхөн хүргэгдсэн захиалгын бараанд, захиалга+бараа бүрт нэг удаа
+model Review {
+  id           String   @id @default(cuid())
+  productId    String
+  orderId      String
+  shopId       String
+  rating       Int // 1-5
+  comment      String?
+  images       String[]
+  customerName String // Харуулахдаа нэрийг нууцална: "Б***"
+  createdAt    DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, productId])
+  @@index([productId, createdAt])
+  @@index([shopId, createdAt])
 }
 
 // ─── Хүргэлт (өөрийн жолооч) ────────────────────────────────────────

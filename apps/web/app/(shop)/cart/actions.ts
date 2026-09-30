@@ -118,7 +118,7 @@ export async function getMyOrders(keys: { number: number; phone: string }[]) {
   if (valid.length === 0) return [];
   const orders = await prisma.order.findMany({
     where: { OR: valid.map((k) => ({ number: k.number, customer: { phone: k.phone } })) },
-    include: { shop: { select: { name: true, slug: true } }, items: true, delivery: { select: { status: true } } },
+    include: { shop: { select: { name: true, slug: true } }, items: true, reviews: { select: { productId: true, rating: true } } },
     orderBy: { createdAt: "desc" },
   });
   return orders.map((o) => ({
@@ -127,7 +127,7 @@ export async function getMyOrders(keys: { number: number; phone: string }[]) {
     total: o.total,
     createdAt: o.createdAt.toISOString(),
     shop: o.shop,
-    items: o.items.map((i) => ({ name: i.name, quantity: i.quantity })),
+    items: o.items.map((i) => ({ name: i.name, quantity: i.quantity, productId: i.productId, rating: o.reviews.find((r) => r.productId === i.productId)?.rating ?? null })),
     phone: valid.find((k) => k.number === o.number)!.phone,
   }));
 }

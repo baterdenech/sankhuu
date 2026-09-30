@@ -10,6 +10,8 @@ export type CardProduct = {
   images: string[];
   stock: number;
   category?: string | null;
+  ratingCount?: number;
+  ratingSum?: number;
   createdAt?: Date;
   shop: { slug: string; name: string };
   sold?: number;
@@ -45,6 +47,20 @@ export function PriceBlock({ price, compareAtPrice, size = "sm" }: { price: numb
   );
 }
 
+export function Stars({ count, sum, size = "sm" }: { count?: number; sum?: number; size?: "sm" | "lg" }) {
+  if (!count) return null;
+  const avg = sum! / count;
+  return (
+    <span className={`stars ${size}`} aria-label={`${avg.toFixed(1)} од, ${count} үнэлгээ`}>
+      <span className="stars-bg" aria-hidden>
+        ★★★★★<span className="stars-fg" style={{ width: `${(avg / 5) * 100}%` }}>★★★★★</span>
+      </span>
+      <span className="stars-num">{avg.toFixed(1)}</span>
+      <span className="stars-count">({count})</span>
+    </span>
+  );
+}
+
 export function ProductImage({ src, alt, category, className = "" }: { src?: string; alt: string; category?: string | null; className?: string }) {
   if (src) {
     // eslint-disable-next-line @next/next/no-img-element
@@ -71,6 +87,7 @@ export function ProductCard({ p, showShop = true }: { p: CardProduct; showShop?:
       <div className="pcard-body">
         <div className="pcard-name">{p.name}</div>
         <PriceBlock price={p.price} compareAtPrice={p.compareAtPrice} />
+        <Stars count={p.ratingCount} sum={p.ratingSum} />
         <div className="pcard-delivery">
           <span className="rocket">Sankhuu хүргэлт</span>
           <span className="arrive">{DELIVERY_PROMISE}</span>

@@ -36,9 +36,19 @@ export function OrderActions({ id, status }: { id: string; status: OrderStatus }
   if (status === "READY_FOR_PICKUP")
     return (
       <div className="order-actions">
-        <span className="muted small-text">Жолооч хуваарилагдахыг хүлээж байна</span>
+        <button className="btn primary" disabled={pending} onClick={go("IN_DELIVERY")}>
+          Хүргэлтэд гаргах
+        </button>
         <button className="btn" disabled={pending} onClick={go("CANCELLED", "Захиалгыг цуцлах уу?")}>
           Цуцлах
+        </button>
+      </div>
+    );
+  if (status === "IN_DELIVERY")
+    return (
+      <div className="order-actions">
+        <button className="btn primary" disabled={pending} onClick={go("DELIVERED", "Бараа хүргэгдэж, төлбөр төлөгдсөн үү?")}>
+          Хүргэгдсэн
         </button>
       </div>
     );
