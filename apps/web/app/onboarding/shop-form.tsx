@@ -20,9 +20,9 @@ export function ShopForm({ defaultPhone }: { defaultPhone: string }) {
       </div>
 
       <label htmlFor="facebookPageUrl">
-        Facebook page <span className="muted">(заавал биш)</span>
+        Нийгмийн сүлжээний холбоос <span className="muted">(заавал биш)</span>
       </label>
-      <input id="facebookPageUrl" name="facebookPageUrl" type="url" inputMode="url" defaultValue={v.facebookPageUrl ?? ""} placeholder="https://facebook.com/..." />
+      <input id="facebookPageUrl" name="facebookPageUrl" type="url" inputMode="url" defaultValue={v.facebookPageUrl ?? ""} placeholder="https://..." />
 
       <fieldset className="fieldset">
         <legend>Жолооч барааг хаанаас авах вэ?</legend>

@@ -27,8 +27,8 @@ export async function createShop(_prev: FormState, formData: FormData): Promise<
 
   if (name.length < 2) return fail("Дэлгүүрийн нэрээ оруулна уу.");
   if (!phone) return fail("Утасны дугаараа зөв оруулна уу (8 оронтой).");
-  if (facebookPageUrl && !/^https?:\/\/(www\.|m\.)?(facebook\.com|fb\.com|instagram\.com)\//i.test(facebookPageUrl)) {
-    return fail("Facebook page-ийн холбоос facebook.com-оор эхэлсэн байх ёстой.");
+  if (facebookPageUrl && !/^https?:\/\/[^\s/]+\.[^\s/]+/i.test(facebookPageUrl)) {
+    return fail("Холбоос https://-ээр эхэлсэн байх ёстой.");
   }
   if (!(DISTRICTS as readonly string[]).includes(district)) return fail("Дүүргээ сонгоно уу.");
   if (details.length < 5) return fail("Барааг авах хаягаа дэлгэрэнгүй бичнэ үү (байр, орц, тоот).");

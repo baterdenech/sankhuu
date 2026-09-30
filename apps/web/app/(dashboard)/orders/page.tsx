@@ -43,7 +43,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
         <div className="empty">
           <p>Энд захиалга алга.</p>
           <p className="small-text">
-            Худалдан авагчид <code>{`erp.flexlink.mn/s/${shop.slug}`}</code> холбоосоор орж захиална. Холбоосыг Facebook пост, Messenger-т тавиарай.
+            Худалдан авагчид <code>{`erp.flexlink.mn/s/${shop.slug}`}</code> холбоосоор орж захиална. Холбоосыг харилцагчиддаа хуваалцаарай.
           </p>
         </div>
       ) : (

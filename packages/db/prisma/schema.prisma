@@ -1,4 +1,4 @@
-// Sankhuu: Facebook худалдагчдад зориулсан захиалга + хүргэлтийн систем (1-р шат)
+// Sankhuu: онлайн худалдаа + өөрийн жолоочтой хүргэлтийн систем (1-р шат)
 // Мөнгөн дүнг бүхэлд нь төгрөгөөр (Int) хадгална.
 
 generator client {
@@ -44,7 +44,7 @@ model Shop {
   slug            String   @unique
   phone           String
   facebookPageUrl String?
-  facebookPageId  String?  @unique // Дараа нь Graph API холболтод
+  facebookPageId  String?  @unique // Нөөц: нийгмийн сүлжээний холболтод
   logoUrl         String?
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
@@ -90,7 +90,7 @@ model Product {
   category        String? // AI-ийн санал болгосон эсвэл худалдагчийн сонгосон ангилал
   sku             String?
   images          String[]
-  facebookPostUrl String? // Барааг FB пост линкээр оруулсан бол
+  facebookPostUrl String? // Нөөц: гадаад эх сурвалжийн холбоос
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -176,7 +176,7 @@ model Order {
   number        Int           @unique @default(autoincrement()) // Хүнд харагдах дугаар
   shopId        String
   customerId    String
-  source        OrderSource   @default(FACEBOOK_MESSENGER)
+  source        OrderSource   @default(FACEBOOK_MESSENGER) // Хуучин default; апп үргэлж source-ийг өөрөө заана
   status        OrderStatus   @default(NEW)
   subtotal      Int // Барааны нийт үнэ
   deliveryFee   Int           @default(0) // Худалдан авагчаас авах хүргэлтийн төлбөр

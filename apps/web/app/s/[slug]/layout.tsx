@@ -42,7 +42,7 @@ export default async function StorefrontLayout({ children, params }: { children:
       <footer className="sf-footer">
         {shop.facebookPageUrl && (
           <a href={shop.facebookPageUrl} target="_blank" rel="noopener">
-            Facebook хуудас
+            Дэлгүүрийн бусад суваг
           </a>
         )}
         <span>

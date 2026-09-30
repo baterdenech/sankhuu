@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Sankhuu",
-  description: "Facebook худалдагчдад зориулсан захиалга, хүргэлтийн систем",
+  description: "Онлайн худалдаа, хүргэлтийн систем",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

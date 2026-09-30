@@ -4,8 +4,8 @@ import { prisma } from "@sankhuu/db";
 import { formatMNT } from "@/lib/labels";
 
 export const metadata: Metadata = {
-  title: "Sankhuu · Facebook дэлгүүрүүдийн бараа нэг дороос",
-  description: "Монголын Facebook худалдагчдын барааг нэг дороос хайж, захиалаад хүргүүлээрэй.",
+  title: "Sankhuu · Онлайн худалдаа, хүргэлт",
+  description: "Дэлгүүрүүдийн барааг нэг дороос хайж, захиалаад хаалган дээрээ хүргүүлээрэй.",
 };
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ q?: string; c?: string }> }) {
@@ -47,7 +47,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       <main className="sf-main">
         {!filtering && (
           <section className="hero">
-            <h1>Facebook дэлгүүрүүдийн бараа нэг дороос</h1>
+            <h1>Хүссэн бараагаа нэг дороос</h1>
             <p>Хайгаад, захиалаад, хаалган дээрээ хүлээж аваарай. Төлбөрийг хүргэлтээр төлнө.</p>
           </section>
         )}
@@ -141,7 +141,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         )}
 
         <section className="seller-cta">
-          <h2>Facebook-ээр бараа зардаг уу?</h2>
+          <h2>Бараа зардаг уу?</h2>
           <p>Дэлгүүрээ Sankhuu дээр нээгээд бараагаа зургаар бүртгэ, захиалгаа нэг дороос удирд, хүргэлтийг бид хийе.</p>
           <Link href="/login/register" className="btn primary big">
             Дэлгүүрээ үнэгүй нээх
