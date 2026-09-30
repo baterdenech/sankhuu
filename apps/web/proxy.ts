@@ -29,7 +29,9 @@ export async function proxy(request: NextRequest) {
   const isPublic =
     isLoginPage ||
     pathname === "/" ||
-    ["/s/", "/categories", "/search", "/cart", "/me", "/orders/", "/reviews/", "/shops", "/api/health", "/api/assistant"].some((p) => pathname === p.replace(/\/$/, "") || pathname.startsWith(p));
+    pathname.includes("/opengraph-image") ||
+    pathname.includes("/twitter-image") ||
+    ["/s/", "/categories", "/search", "/cart", "/me", "/orders/", "/reviews/", "/shops", "/api/health", "/api/assistant", "/api/og/"].some((p) => pathname === p.replace(/\/$/, "") || pathname.startsWith(p));
 
   if (!isAuthed && !isPublic) {
     const loginUrl = new URL("/login", request.url);

@@ -6,10 +6,13 @@ import { TopBar } from "../../_components/top-bar";
 import { ProductCard } from "../../_components/product-card";
 import { soldCounts } from "../../_components/catalog";
 import { AskBar } from "../../_components/ask-bar";
+import { ShareButton } from "../../_components/share-button";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const shop = await prisma.shop.findFirst({ where: { slug: (await params).slug, isActive: true }, select: { name: true } });
-  return { title: shop ? `${shop.name} · Sankhuu` : "Дэлгүүр олдсонгүй" };
+  const shop = await prisma.shop.findFirst({ where: { slug: (await params).slug, isActive: true }, select: { name: true, _count: { select: { products: { where: { isActive: true } } } } } });
+  if (!shop) return { title: "Дэлгүүр олдсонгүй" };
+  const description = `${shop.name}: ${shop._count.products} бараа. Sankhuu-гээр захиалаад хаалган дээрээ хүргүүлж, хүлээж аваад төлнө.`;
+  return { title: `${shop.name} · Sankhuu`, description, openGraph: { title: shop.name, description, type: "website" } };
 }
 
 export default async function ShopPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ c?: string }> }) {
@@ -27,7 +30,7 @@ export default async function ShopPage({ params, searchParams }: { params: Promi
 
   return (
     <>
-      <TopBar title={shop.name} backHref="/" />
+      <TopBar title={shop.name} backHref="/" right={<ShareButton title={shop.name} text={`${shop.name} · Sankhuu дээр`} />} />
       <section className="shop-head">
         {shop.logoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
