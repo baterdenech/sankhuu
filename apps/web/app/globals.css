@@ -254,3 +254,71 @@ a.card:hover { border-color: var(--accent); }
 .map-legend i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
 .map-legend i.ring { background: #fff; border: 3px solid #1d4ed8; box-sizing: border-box; }
 .leaflet-container { font: inherit; }
+
+/* ─── Статистик (/stats): нэг цуврал брэнд өнгөтэй, статусын өнгө зөвхөн байдлын графикт ─── */
+:root { --chart-series: #e85d04; --chart-grid: var(--border); --st-good: #0ca30c; --st-warn: #fab219; --st-bad: #d03b3b; }
+.stats-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.stats-filters .chip { text-decoration: none; color: var(--text); }
+.stats-filters .chip.on { color: var(--bg); }
+.stats-filters .muted { margin-left: 4px; }
+.stats-kpis { margin-bottom: 16px; }
+.stats-kpis .value { font-variant-numeric: tabular-nums; }
+.delta { margin-top: 6px; font-size: 13px; }
+.delta.up { color: var(--st-good); }
+.delta.down { color: var(--st-bad); }
+.delta .muted { color: var(--muted); }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 860px) { .stats-grid { grid-template-columns: 1fr; } }
+.chart-card { margin-bottom: 16px; }
+.chart-card header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.chart-card h2 { margin: 0; font-size: 16px; }
+.chart-card details { margin-top: 12px; }
+.chart-card summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+.chart-card details .table { margin-top: 8px; }
+.chart-card .table .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Босоо баганан график */
+.chart-plot { display: grid; grid-template-columns: auto 1fr; gap: 0 8px; height: 220px; }
+.chart-y { display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; padding-bottom: 18px; }
+.chart-y span { line-height: 1; transform: translateY(50%); }
+.chart-y span:first-child { transform: none; }
+.chart-y span:last-child { transform: translateY(0); }
+.chart-area { position: relative; display: flex; flex-direction: column; min-width: 0; }
+.chart-grid { position: absolute; inset: 0 0 18px; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; }
+.chart-grid i { display: block; height: 1px; background: var(--chart-grid); }
+.chart-cols { position: relative; flex: 1; display: flex; align-items: flex-end; gap: 2px; }
+.chart-col { position: relative; flex: 1; min-width: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; outline: 0; }
+.chart-bar { width: 100%; max-width: 24px; min-height: 0; background: var(--chart-series); border-radius: 4px 4px 0 0; transition: opacity 0.1s; }
+.chart-col:hover .chart-bar, .chart-col:focus .chart-bar { opacity: 0.8; }
+.chart-x { display: flex; gap: 2px; height: 18px; align-items: flex-end; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.chart-x span { flex: 1; min-width: 0; text-align: center; white-space: nowrap; overflow: visible; }
+.chart-empty { position: absolute; inset: 0 0 18px; display: grid; place-items: center; margin: 0; font-size: 14px; color: var(--muted); }
+.chart-empty.static { position: static; padding: 40px 0; text-align: center; }
+
+/* Tooltip: hover/фокус дээр, захын баганад ирмэгээс хэтрэхгүй */
+.chart-tip { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); display: none; flex-direction: column; gap: 2px; padding: 6px 10px; border-radius: 8px; background: var(--text); color: var(--bg); font-size: 12px; white-space: nowrap; z-index: 2; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.chart-tip b { font-weight: 600; }
+.chart-col:hover .chart-tip, .chart-col:focus .chart-tip, .bar-list li:hover .chart-tip, .bar-list li:focus .chart-tip { display: flex; }
+.chart-col.edge-l .chart-tip { left: 0; transform: none; }
+.chart-col.edge-r .chart-tip { left: auto; right: 0; transform: none; }
+
+/* Хэвтээ баганууд (эрэлттэй бараа) */
+.bar-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.bar-list li { position: relative; display: grid; grid-template-columns: minmax(120px, 30%) 1fr auto; align-items: center; gap: 10px; font-size: 13px; outline: 0; }
+.bar-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { display: block; height: 16px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.bar-fill { display: block; height: 100%; min-width: 2px; background: var(--chart-series); border-radius: 0 4px 4px 0; }
+.bar-value { font-variant-numeric: tabular-nums; color: var(--muted); }
+.bar-list .chart-tip { left: 30%; bottom: calc(100% + 2px); transform: none; }
+
+/* Захиалгын байдал: давхар багана + тайлбар */
+.status-track { display: flex; gap: 2px; height: 20px; border-radius: 4px; overflow: hidden; }
+.status-seg { display: block; flex-basis: 0; min-width: 4px; }
+.status-seg.done, .status-dot.done { background: var(--st-good); }
+.status-seg.active, .status-dot.active { background: var(--st-warn); }
+.status-seg.cancelled, .status-dot.cancelled { background: var(--st-bad); }
+.status-legend { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.status-legend li { display: flex; align-items: center; gap: 8px; }
+.status-legend b { font-variant-numeric: tabular-nums; margin-left: auto; }
+.status-dot { width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center; color: #fff; font-size: 12px; font-weight: 700; }
+.status-dot.active { color: #1a1300; }
