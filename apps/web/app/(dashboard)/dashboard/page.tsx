@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@sankhuu/db";
 import { requireShop } from "@/lib/shop";
 import { formatMNT, LOW_STOCK } from "@/lib/labels";
+import { aiEnabled } from "@/lib/ai/product";
+import { Insights } from "./insights";
 
 export default async function DashboardPage() {
   const { shop } = await requireShop();
@@ -54,6 +56,7 @@ export default async function DashboardPage() {
           </Link>
         ))}
       </div>
+      {aiEnabled() && productCount > 0 && <Insights />}
       {productCount === 0 && (
         <div className="empty" style={{ marginTop: 16 }}>
           <p>Эхний бараагаа нэмээрэй. Зургийг нь оруулахад нэр, тайлбарыг AI бөглөж өгнө.</p>

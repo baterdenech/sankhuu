@@ -121,3 +121,59 @@ export async function adjustStock(id: string, delta: number) {
   revalidatePath("/products");
   revalidatePath("/dashboard");
 }
+
+// ─── Олноор бүртгэх: зураг бүрийг хадгалаад AI-аар ноорог гаргана, дараа нь нэг дор үүсгэнэ ───
+export type BulkDraft = { imageUrl: string; name: string; description: string; category: string; price: number | null };
+
+export async function draftFromImage(formData: FormData): Promise<BulkDraft | { error: string }> {
+  const { shop } = await requireShop();
+  const file = formData.get("image");
+  if (!(file instanceof File) || file.size === 0) return { error: "Зураг алга." };
+  try {
+    const bytes = Buffer.from(await file.arrayBuffer());
+    const [imageUrl, draft] = await Promise.all([
+      uploadImage(file, `shops/${shop.id}`),
+      analyzeProductImage(bytes, file.type).catch((e) => (console.error("AI bulk analysis failed", e), null)),
+    ]);
+    return {
+      imageUrl,
+      name: draft?.name ?? "",
+      description: draft?.description ?? "",
+      category: draft?.category ?? "",
+      price: draft?.suggestedPriceMnt ? Math.round(draft.suggestedPriceMnt / 1000) * 1000 : null,
+    };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Зураг хадгалж чадсангүй." };
+  }
+}
+
+export type BulkRow = { imageUrl: string; name: string; description: string; category: string; price: number; stock: number };
+
+export async function createProducts(rows: BulkRow[]): Promise<{ created?: number; error?: string }> {
+  const { shop } = await requireShop();
+  if (!Array.isArray(rows) || rows.length === 0) return { error: "Бараа алга." };
+  if (rows.length > 50) return { error: "Нэг удаад 50 хүртэл бараа бүртгэнэ." };
+  const data = [];
+  for (const [i, r] of rows.entries()) {
+    const name = String(r.name ?? "").trim();
+    const price = Math.trunc(Number(r.price));
+    const stock = Math.trunc(Number(r.stock));
+    if (name.length < 2) return { error: `${i + 1}-р барааны нэрийг оруулна уу.` };
+    if (!Number.isFinite(price) || price <= 0) return { error: `"${name}" барааны үнийг оруулна уу.` };
+    if (!Number.isFinite(stock) || stock < 0) return { error: `"${name}" барааны үлдэгдэл буруу байна.` };
+    if (typeof r.imageUrl !== "string" || !r.imageUrl) return { error: `"${name}" барааны зураг алга.` };
+    data.push({
+      shopId: shop.id,
+      name,
+      price,
+      stock,
+      description: String(r.description ?? "").trim() || null,
+      category: (PRODUCT_CATEGORIES as readonly string[]).includes(r.category) ? r.category : null,
+      images: [r.imageUrl],
+    });
+  }
+  await prisma.product.createMany({ data });
+  revalidatePath("/products");
+  revalidatePath("/dashboard");
+  return { created: data.length };
+}
