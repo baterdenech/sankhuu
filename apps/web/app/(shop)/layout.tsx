@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { BottomNav } from "./_components/bottom-nav";
 import { Assistant } from "./_components/assistant";
 import { FavoritesProvider } from "./_components/favorites";
+import { InstallPrompt } from "../_components/pwa";
 
 export default async function ShopLayout({ children }: { children: React.ReactNode }) {
   // Нэвтэрсэн бол дуртай барааны id-уудыг нэг удаа ачаална (зүрхэн товчнууд үүнээс уншина)
@@ -13,6 +14,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
     <div className="app">
       <FavoritesProvider initial={favorites.map((f) => f.productId)} loggedIn={Boolean(user)}>
         <div className="app-page">{children}</div>
+        <InstallPrompt />
         <Assistant />
         <BottomNav />
       </FavoritesProvider>

@@ -31,6 +31,12 @@ export async function proxy(request: NextRequest) {
     pathname === "/" ||
     pathname.includes("/opengraph-image") ||
     pathname.includes("/twitter-image") ||
+    // PWA: манифест, service worker, offline хуудас, дүрсүүд нэвтрэлт шаардахгүй
+    pathname === "/sw.js" ||
+    pathname === "/manifest.webmanifest" ||
+    pathname === "/driver/manifest.webmanifest" ||
+    pathname === "/offline" ||
+    pathname.startsWith("/icons/") ||
     ["/s/", "/categories", "/search", "/cart", "/me", "/orders/", "/reviews/", "/shops", "/api/health", "/api/assistant", "/api/og/"].some((p) => pathname === p.replace(/\/$/, "") || pathname.startsWith(p));
 
   if (!isAuthed && !isPublic) {
