@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { prisma } from "@sankhuu/db";
 import { CartIcon, SearchIcon } from "./_components/icons";
 import { CategoryIcon, FlameIcon, ParcelIcon, SparkleIcon, StoreFrontIcon, TagIcon } from "./_components/catalog-icons";
-import { ProductCard } from "./_components/product-card";
+import { ProductCard, ProductImage } from "./_components/product-card";
 import { BannerCarousel, type Banner } from "./_components/banner-carousel";
 import { CartBadge } from "./_components/cart-badge";
 import { Countdown } from "./_components/countdown";
@@ -33,7 +33,7 @@ export default async function HomePage() {
     orderBy: { createdAt: "desc" },
     take: 40,
   });
-  const [sold, shops] = await Promise.all([
+  const [sold, shops, catThumbs] = await Promise.all([
     soldCounts(products.map((p) => p.id)),
     prisma.shop.findMany({
       where: { isActive: true, products: { some: { isActive: true, stock: { gt: 0 } } } },
@@ -41,7 +41,15 @@ export default async function HomePage() {
       orderBy: { createdAt: "desc" },
       take: 12,
     }),
+    // Ангилал бүрийн хамгийн сайн үнэлгээтэй барааны зураг (ангиллын дугуй зурагт)
+    prisma.product.findMany({
+      where: { ...publicProductWhere, stock: { gt: 0 }, category: { not: null } },
+      distinct: ["category"],
+      orderBy: [{ ratingCount: "desc" }, { createdAt: "desc" }],
+      select: { category: true, images: true },
+    }),
   ]);
+  const thumbOf = new Map(catThumbs.map((t) => [t.category!, t.images[0]]));
   const deals = products.filter((p) => p.compareAtPrice && p.compareAtPrice > p.price).slice(0, 10);
   const popular = [...products].filter((p) => (sold.get(p.id) ?? 0) > 0).sort((a, b) => (sold.get(b.id) ?? 0) - (sold.get(a.id) ?? 0)).slice(0, 10);
   const topDeal = [...deals].sort((a, b) => b.compareAtPrice! / b.price - a.compareAtPrice! / a.price)[0];
@@ -91,14 +99,27 @@ export default async function HomePage() {
       <AskBar />
 
       <section className="cat-grid" aria-label="Ангилал">
-        {ALL_CATEGORIES.map((c) => (
-          <Link key={c} href={`/categories/${encodeURIComponent(c)}`} className="cat-item">
-            <span className="cat-icon" style={{ background: categoryStyle(c).background, color: categoryStyle(c).color }}>
-              <CategoryIcon name={c} size={26} />
-            </span>
-            <span className="cat-label">{c}</span>
-          </Link>
-        ))}
+        {ALL_CATEGORIES.map((c) => {
+          const s = categoryStyle(c);
+          const thumb = thumbOf.get(c);
+          return (
+            <Link key={c} href={`/categories/${encodeURIComponent(c)}`} className="cat-item">
+              {thumb ? (
+                <span className="cat-photo">
+                  <ProductImage src={thumb} alt="" category={c} />
+                  <span className="cat-photo-badge" style={{ background: s.background, color: s.color }}>
+                    <CategoryIcon name={c} />
+                  </span>
+                </span>
+              ) : (
+                <span className="cat-icon" style={{ background: s.background, color: s.color }}>
+                  <CategoryIcon name={c} size={26} />
+                </span>
+              )}
+              <span className="cat-label">{c}</span>
+            </Link>
+          );
+        })}
       </section>
 
       {shops.length > 0 && (

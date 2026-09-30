@@ -84,7 +84,8 @@ export function ProductCard({ p, showShop = true }: { p: CardProduct; showShop?:
     <Link href={`/s/${p.shop.slug}/p/${p.id}`} className={`pcard${p.stock === 0 ? " sold-out" : ""}`}>
       <div className="pcard-media">
         <ProductImage src={p.images[0]} alt={p.name} category={p.category} />
-        {p.stock === 0 ? <span className="pcard-out">Дууссан</span> : isNew && !pct ? <span className="pcard-tag">Шинэ</span> : null}
+        {p.stock === 0 ? <span className="pcard-out">Дууссан</span> : isNew ? <span className="pcard-tag">Шинэ</span> : null}
+        {pct > 0 && p.stock > 0 && <span className="pcard-off">-{pct}%</span>}
       </div>
       <div className="pcard-body">
         <div className="pcard-name">{p.name}</div>
