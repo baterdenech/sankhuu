@@ -17,7 +17,7 @@ export default async function OnboardingPage() {
         <p className="muted">
           Нэг минутын дотор дуусна. Дараа нь бараагаа зургаар бүртгээд захиалга авч эхэлнэ.
         </p>
-        <ShopForm defaultPhone={formatPhone(user.phone)} />
+        <ShopForm defaultPhone={user.phone ? formatPhone(user.phone) : ""} />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireShop } from "@/lib/shop";
 import { formatPhone } from "@/lib/phone";
+import { displayName } from "@/lib/auth";
 import { signOut } from "../login/actions";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -20,7 +21,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <Link href="/deliveries">Хүргэлт</Link>
         </nav>
         <div className="account">
-          <div>{user.name ?? formatPhone(user.phone)}</div>
+          <div>{displayName(user, formatPhone)}</div>
           <form action={signOut}>
             <button type="submit" className="link-button">
               Гарах

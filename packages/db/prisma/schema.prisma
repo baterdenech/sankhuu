@@ -20,9 +20,12 @@ enum Role {
 
 // Нэвтрэлтийг Supabase Auth (утас + SMS код) хариуцна.
 // User.id нь Supabase-ийн auth.users.id (UUID)-тай ижил: апп-д анх нэвтрэхэд үүснэ.
+// Хоёр аргаар нэвтэрнэ: утас + SMS код, эсвэл нэвтрэх нэр + нууц үг (Supabase email/password,
+// имэйл нь username@login.sankhuu.mn хэлбэртэй техникийн хаяг).
 model User {
   id        String   @id
-  phone     String   @unique // E.164 хэлбэрээр: +97699112233
+  phone     String?  @unique // E.164 хэлбэрээр: +97699112233
+  username  String?  @unique // Жижиг латин үсэг, тоо, доогуур зураас
   name      String?
   role      Role     @default(SELLER)
   isActive  Boolean  @default(true)
