@@ -24,10 +24,16 @@ function readFields(fd: FormData) {
   if (name.length < 2) return { error: "Барааны нэрээ оруулна уу." } as const;
   if (!Number.isFinite(price) || price <= 0) return { error: "Үнээ төгрөгөөр оруулна уу." } as const;
   if (!Number.isFinite(stock) || stock < 0) return { error: "Үлдэгдэл 0 эсвэл түүнээс их байна." } as const;
+  const compareRaw = str(fd, "compareAtPrice");
+  const compareAtPrice = compareRaw ? int(fd, "compareAtPrice") : null;
+  if (compareAtPrice !== null && (!Number.isFinite(compareAtPrice) || compareAtPrice <= price)) {
+    return { error: "Хямдралын өмнөх үнэ одоогийн үнээс их байх ёстой." } as const;
+  }
   return {
     data: {
       name,
       price,
+      compareAtPrice,
       stock,
       description: str(fd, "description") || null,
       category: (PRODUCT_CATEGORIES as readonly string[]).includes(category) ? category : null,

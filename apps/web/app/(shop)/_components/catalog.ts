@@ -1,6 +1,6 @@
 import { prisma, type Prisma } from "@sankhuu/db";
 
-export { ALL_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS, categoryStyle } from "./catalog-meta";
+export { ALL_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS, DELIVERY_FROM, DELIVERY_PROMISE, categoryStyle } from "./catalog-meta";
 
 // Идэвхтэй дэлгүүрийн, нийтэд харагдах бараа
 export const publicProductWhere: Prisma.ProductWhereInput = { isActive: true, shop: { isActive: true } };

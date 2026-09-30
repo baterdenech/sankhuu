@@ -9,8 +9,8 @@ const TABS = [
   { href: "/", label: "Нүүр", Icon: HomeIcon, match: (p: string) => p === "/" || p.startsWith("/s/") },
   { href: "/categories", label: "Ангилал", Icon: GridIcon, match: (p: string) => p.startsWith("/categories") },
   { href: "/search", label: "Хайх", Icon: SearchIcon, match: (p: string) => p.startsWith("/search") },
-  { href: "/cart", label: "Сагс", Icon: CartIcon, match: (p: string) => p.startsWith("/cart") },
   { href: "/me", label: "Миний", Icon: UserIcon, match: (p: string) => p.startsWith("/me") || p.startsWith("/orders") },
+  { href: "/cart", label: "Сагс", Icon: CartIcon, match: (p: string) => p.startsWith("/cart") },
 ];
 
 export function BottomNav() {

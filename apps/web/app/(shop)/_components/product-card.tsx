@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { categoryStyle } from "./catalog-meta";
+import { DELIVERY_PROMISE } from "./catalog-meta";
 
 export type CardProduct = {
   id: string;
   name: string;
   price: number;
+  compareAtPrice?: number | null;
   images: string[];
   stock: number;
   category?: string | null;
@@ -13,12 +15,33 @@ export type CardProduct = {
   sold?: number;
 };
 
+export function discountPct(price: number, compareAt?: number | null) {
+  if (!compareAt || compareAt <= price) return 0;
+  return Math.round((1 - price / compareAt) * 100);
+}
+
 export function Price({ value, className = "" }: { value: number; className?: string }) {
   return (
     <span className={`price ${className}`}>
       {value.toLocaleString("en-US")}
       <span className="price-cur">₮</span>
     </span>
+  );
+}
+
+// Coupang маягийн үнийн блок: хямдралын хувь (улаан) · зурсан хуучин үнэ · бодит үнэ (хар, том)
+export function PriceBlock({ price, compareAtPrice, size = "sm" }: { price: number; compareAtPrice?: number | null; size?: "sm" | "lg" }) {
+  const pct = discountPct(price, compareAtPrice);
+  return (
+    <div className={`priceblock ${size}`}>
+      {pct > 0 && (
+        <div className="priceblock-top">
+          <span className="discount">{pct}%</span>
+          <s className="was">{compareAtPrice!.toLocaleString("en-US")}₮</s>
+        </div>
+      )}
+      <Price value={price} />
+    </div>
   );
 }
 
@@ -43,14 +66,18 @@ export function ProductCard({ p, showShop = true }: { p: CardProduct; showShop?:
     <Link href={`/s/${p.shop.slug}/p/${p.id}`} className={`pcard${p.stock === 0 ? " sold-out" : ""}`}>
       <div className="pcard-media">
         <ProductImage src={p.images[0]} alt={p.name} category={p.category} />
-        {p.stock === 0 ? <span className="tag tag-out">Дууссан</span> : isNew ? <span className="tag tag-new">Шинэ</span> : null}
+        {p.stock === 0 && <span className="pcard-out">Дууссан</span>}
       </div>
       <div className="pcard-body">
         <div className="pcard-name">{p.name}</div>
-        <Price value={p.price} className="pcard-price" />
+        <PriceBlock price={p.price} compareAtPrice={p.compareAtPrice} />
+        <div className="pcard-delivery">
+          <span className="rocket">Sankhuu хүргэлт</span>
+          <span className="arrive">{DELIVERY_PROMISE}</span>
+        </div>
         <div className="pcard-meta">
           {showShop && <span className="pcard-shop">{p.shop.name}</span>}
-          {p.sold ? <span className="pcard-sold">{p.sold} зарагдсан</span> : null}
+          {p.sold ? <span className="pcard-sold">{p.sold} зарагдсан</span> : isNew ? <span className="pcard-sold new">Шинэ</span> : null}
         </div>
       </div>
     </Link>

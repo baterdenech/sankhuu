@@ -26,6 +26,7 @@ export function ProductForm({ action, submitLabel, ai, product }: Props) {
   const [category, setCategory] = useState(product?.category ?? "");
   const [price, setPrice] = useState(product ? String(product.price) : "");
   const [stock, setStock] = useState(String(product?.stock ?? 1));
+  const [compareAt, setCompareAt] = useState(product?.compareAtPrice ? String(product.compareAtPrice) : "");
   const [sku, setSku] = useState(product?.sku ?? "");
   const priceRef = useRef<HTMLInputElement>(null);
 
@@ -105,6 +106,14 @@ export function ProductForm({ action, submitLabel, ai, product }: Props) {
           <input id="stock" name="stock" inputMode="numeric" value={stock} onChange={(e) => setStock(e.target.value)} required min={0} type="number" />
         </div>
       </div>
+
+      <label htmlFor="compareAtPrice">
+        Хямдралын өмнөх үнэ (₮) <span className="muted">(заавал биш)</span>
+      </label>
+      <input id="compareAtPrice" name="compareAtPrice" inputMode="numeric" value={compareAt} onChange={(e) => setCompareAt(e.target.value.replace(/[^\d]/g, ""))} placeholder="Хямдралтай бол хуучин үнэ" />
+      {compareAt && price && Number(compareAt) > Number(price) && (
+        <p className="ai-status ok">−{Math.round((1 - Number(price) / Number(compareAt)) * 100)}% хямдрал гэж харагдана</p>
+      )}
 
       <label htmlFor="category">Ангилал</label>
       <select id="category" name="category" value={category} onChange={(e) => setCategory(e.target.value)}>

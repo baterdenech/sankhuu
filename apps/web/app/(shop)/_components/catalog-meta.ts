@@ -30,3 +30,7 @@ export const CATEGORY_COLORS: Record<string, string> = {
 export function categoryStyle(category: string | null | undefined) {
   return { background: CATEGORY_COLORS[category ?? "Бусад"] ?? CATEGORY_COLORS["Бусад"], icon: CATEGORY_ICONS[category ?? "Бусад"] ?? "🎁" };
 }
+
+// Хүргэлтийн амлалт (картан дээр ногооноор харагдана). Бизнесийн нөхцөл өөрчлөгдвөл эндээс засна.
+export const DELIVERY_PROMISE = "1-2 өдөрт хүргэнэ";
+export const DELIVERY_FROM = "Хүргэлт 5,000₮-с";
