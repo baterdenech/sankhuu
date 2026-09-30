@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { categoryStyle } from "./catalog-meta";
+import { ProductImage } from "./product-image";
+export { ProductImage };
 import { DELIVERY_PROMISE } from "./catalog-meta";
 
 export type CardProduct = {
@@ -57,19 +58,6 @@ export function Stars({ count, sum, size = "sm" }: { count?: number; sum?: numbe
       </span>
       <span className="stars-num">{avg.toFixed(1)}</span>
       <span className="stars-count">({count})</span>
-    </span>
-  );
-}
-
-export function ProductImage({ src, alt, category, className = "" }: { src?: string; alt: string; category?: string | null; className?: string }) {
-  if (src) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} loading="lazy" className={className} />;
-  }
-  const { background, icon } = categoryStyle(category);
-  return (
-    <span className={`img-placeholder ${className}`} style={{ background }} aria-label="Зураггүй">
-      <span>{icon}</span>
     </span>
   );
 }

@@ -5,9 +5,11 @@ import { prisma } from "@sankhuu/db";
 import { TopBar } from "../../../../_components/top-bar";
 import { CartIcon, TruckIcon } from "../../../../_components/icons";
 import { CartBadge } from "../../../../_components/cart-badge";
-import { PriceBlock, ProductCard, ProductImage, Stars } from "../../../../_components/product-card";
+import { PriceBlock, ProductCard, Stars } from "../../../../_components/product-card";
 import { DELIVERY_FROM, DELIVERY_PROMISE, soldCounts } from "../../../../_components/catalog";
 import { BuyBar } from "./buy-bar";
+import { Gallery } from "./gallery";
+import { ShareButton } from "../../../../_components/share-button";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -34,17 +36,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         title=""
         backHref={`/s/${slug}`}
         right={
-          <Link href="/cart" className="topbar-cart" aria-label="Сагс">
-            <CartIcon />
-            <CartBadge />
-          </Link>
+          <>
+            <ShareButton title={product.name} text={`${product.name} · ${product.price.toLocaleString("en-US")}₮`} />
+            <Link href="/cart" className="topbar-cart" aria-label="Сагс">
+              <CartIcon />
+              <CartBadge />
+            </Link>
+          </>
         }
       />
       <article className="pdp">
-        <div className="pdp-media">
-          <ProductImage src={product.images[0]} alt={product.name} category={product.category} />
-          <span className="pdp-counter">1 / {Math.max(1, product.images.length)}</span>
-        </div>
+        <Gallery images={product.images} alt={product.name} category={product.category} />
 
         <div className="pdp-body">
           <Link href={`/s/${slug}`} className="pdp-seller">

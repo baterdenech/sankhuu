@@ -33,6 +33,10 @@ pnpm dev                    # http://localhost:3000
 
 Production нь **Supabase** (PostgreSQL) болон **Vercel** (веб) дээр ажиллана. Заавар: [docs/DEPLOY.md](docs/DEPLOY.md)
 
+## Туршилтын өгөгдөл
+
+`packages/db/seed/demo.sql`: жинхэнэ зурагтай 3 demo дэлгүүр, 18 бараа, 12 үнэлгээ. Supabase SQL Editor эсвэл `psql`-ээр ажиллуулна; `demo-cleanup.sql` бүгдийг устгана (бүх id `demo_` угтвартай).
+
 ## Командууд
 
 | Команд | Үйлдэл |
