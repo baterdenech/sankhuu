@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@sankhuu/db";
-import { formatMNT } from "@/lib/labels";
+import { formatMNT, orderStatusLabel } from "@/lib/labels";
 import { formatPhone } from "@/lib/phone";
 import { CheckIcon } from "../../_components/icons";
 import { AfterOrder } from "./after-order";
@@ -30,8 +30,11 @@ export default async function OrdersDonePage({ searchParams }: { searchParams: P
       </p>
       {orders.map((o) => (
         <section key={o.id} className="cart-group">
-          <div className="cart-group-head static">
-            #{o.number} · {o.shop.name}
+          <div className="cart-group-head static done-head">
+            <span>
+              #{o.number} · {o.shop.name}
+            </span>
+            <span className={`order-status s-${o.status}`}>{orderStatusLabel[o.status]}</span>
           </div>
           <ul className="done-items">
             {o.items.map((i) => (

@@ -1,10 +1,12 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { prisma, type Prisma } from "@sankhuu/db";
 import { normalizeMongolianPhone } from "@/lib/phone";
 import { DISTRICTS } from "@/lib/districts";
 import { deliveryFeeFor } from "@/lib/delivery-fee";
+import { notifyOrder } from "@/lib/notify";
 
 export type CheckoutState = { error?: string; values?: Record<string, string> };
 type CartLine = { productId: string; qty: number };
@@ -61,10 +63,10 @@ export async function placeOrder(_prev: CheckoutState, formData: FormData): Prom
     byShop.set(p.shopId, g);
   }
 
-  let numbers: number[];
+  let created: { id: string; number: number }[];
   try {
-    numbers = await prisma.$transaction(async (tx) => {
-      const out: number[] = [];
+    created = await prisma.$transaction(async (tx) => {
+      const out: { id: string; number: number }[] = [];
       for (const g of byShop.values()) {
         for (const it of g.items) {
           const r = await tx.product.updateMany({ where: { id: it.productId, stock: { gte: it.quantity } }, data: { stock: { decrement: it.quantity } } });
@@ -99,8 +101,8 @@ export async function placeOrder(_prev: CheckoutState, formData: FormData): Prom
             },
           },
         };
-        const order = await tx.order.create({ data, select: { number: true } });
-        out.push(order.number);
+        const order = await tx.order.create({ data, select: { id: true, number: true } });
+        out.push(order);
       }
       return out;
     });
@@ -109,7 +111,14 @@ export async function placeOrder(_prev: CheckoutState, formData: FormData): Prom
     throw e;
   }
 
-  redirect(`/orders/done?n=${numbers.join(",")}&phone=${encodeURIComponent(phone)}`);
+  // SMS: худалдан авагчид баталгаа, худалдагчид шинэ захиалга (хариу явсны дараа)
+  after(async () => {
+    for (const o of created) {
+      await notifyOrder(o.id, "ORDER_PLACED");
+      await notifyOrder(o.id, "SELLER_NEW_ORDER");
+    }
+  });
+  redirect(`/orders/done?n=${created.map((o) => o.number).join(",")}&phone=${encodeURIComponent(phone)}`);
 }
 
 // "Миний" хуудас: төхөөрөмж дээр хадгалсан (дугаар, утас) хосуудаар захиалгуудыг татна

@@ -1,8 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { prisma, type OrderStatus } from "@sankhuu/db";
 import { requireShop } from "@/lib/shop";
+import { notifyOrder, type NotifyKind } from "@/lib/notify";
 
 // Худалдагчийн хийж болох шилжилтүүд
 // IN_DELIVERY / DELIVERED-ийг жолоочийн апп гартал худалдагч өөрөө тэмдэглэнэ
@@ -19,11 +21,11 @@ const DELIVERY_FOR: Partial<Record<OrderStatus, { status: "PICKED_UP" | "DELIVER
 
 export async function setOrderStatus(orderId: string, next: OrderStatus) {
   const { shop, user } = await requireShop();
-  await prisma.$transaction(async (tx) => {
+  const applied = await prisma.$transaction(async (tx) => {
     const order = await tx.order.findFirst({ where: { id: orderId, shopId: shop.id }, include: { items: true, delivery: true } });
-    if (!order || !ALLOWED[order.status]?.includes(next)) return;
+    if (!order || !ALLOWED[order.status]?.includes(next)) return false;
     // Жолооч оноогдсон бол хүргэлтийн статусыг жолооч л өөрчилнө
-    if ((next === "IN_DELIVERY" || next === "DELIVERED") && order.delivery?.driverId) return;
+    if ((next === "IN_DELIVERY" || next === "DELIVERED") && order.delivery?.driverId) return false;
 
     await tx.order.update({ where: { id: order.id }, data: { status: next, ...(next === "DELIVERED" ? { paymentStatus: "PAID" } : {}) } });
 
@@ -46,7 +48,11 @@ export async function setOrderStatus(orderId: string, next: OrderStatus) {
         await tx.deliveryEvent.create({ data: { deliveryId: order.delivery.id, status: "CANCELLED", actorId: user.id, note: "Худалдагч захиалгыг цуцлав" } });
       }
     }
+    return true;
   });
+  const SMS_FOR: Partial<Record<OrderStatus, NotifyKind>> = { CONFIRMED: "ORDER_CONFIRMED", IN_DELIVERY: "IN_DELIVERY", DELIVERED: "DELIVERED", CANCELLED: "CANCELLED" };
+  const kind = SMS_FOR[next];
+  if (applied && kind) after(() => notifyOrder(orderId, kind));
   revalidatePath("/orders");
   revalidatePath("/dashboard");
   revalidatePath("/products");

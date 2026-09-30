@@ -51,6 +51,7 @@
    - `SUPABASE_SECRET_KEY`: барааны зураг Supabase Storage-д хадгалахад (integration нэмсэн бол аль хэдийн байгаа). `product-images` bucket-ийг апп өөрөө үүсгэнэ.
    - `SUPABASE_CA_CERT` (заавал биш): Project Settings → Database → SSL Configuration-оос татсан сертификатын агуулга. Өгвөл DB холболт сертификатаа бүрэн шалгана; өгөөгүй бол шифрлэлттэй ч CA шалгахгүй холбогдоно.
    - `ADMIN_USERS`: диспетчерийн эрхтэй хэрэглэгчид, таслалаар (нэвтрэх нэр эсвэл `+976…` утас, жишээ: `bat,+97699112233`). Тэд нэвтрэхэд `/admin` руу орж, тэндээс жолооч, бусад админыг бүртгэнэ.
+   - `SMS_PROVIDER`: `log` (анхдагч, туршилт: мессеж DB-д бүртгэгдэж `/admin/sms` дээр харагдана, жинхэнэ SMS явахгүй) эсвэл `http` (`SMS_HTTP_URL` руу `POST {to, text, from}`, `Authorization: Bearer SMS_HTTP_TOKEN`). Монголын үйлчилгээ үзүүлэгчийн API-г `apps/web/lib/sms/index.ts`-д нэг `SmsProvider` нэмж залгана.
    - `ANTHROPIC_API_KEY`: зурагнаас барааны нэр, тайлбар гаргах AI-д. [console.anthropic.com](https://console.anthropic.com) → API Keys. Байхгүй бол AI хэсэг унтарч, бараа гараар бүртгэгдэнэ.
 
    Vercel-ийн **Supabase integration** (Storage → Supabase) ашигласан бол `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` автоматаар нэмэгддэг бөгөөд код тэдгээрийг ч таньдаг.
