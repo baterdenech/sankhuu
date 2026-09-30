@@ -7,8 +7,9 @@ import { formatPhone } from "@/lib/phone";
 import { signOut } from "../login/actions";
 import { DriverNav } from "./nav";
 import { OnlineToggle } from "./online-toggle";
+import { InstallPrompt } from "../_components/pwa";
 
-export const metadata = { title: "Жолооч · Sankhuu" };
+export const metadata = { title: "Жолооч · Sankhuu", manifest: "/driver/manifest.webmanifest", appleWebApp: { capable: true, title: "Sankhuu Жолооч" } };
 
 // Жолоочийн мобайл апп (вэб): худалдан авагчийн аппын дизайны системийг дахин ашиглана
 export default async function DriverLayout({ children }: { children: React.ReactNode }) {
@@ -28,6 +29,7 @@ export default async function DriverLayout({ children }: { children: React.React
         </header>
         {children}
       </div>
+      <InstallPrompt appName="Sankhuu Жолооч" />
       <DriverNav activeCount={activeCount} />
     </div>
   );
