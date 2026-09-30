@@ -18,14 +18,14 @@ export default async function ShopsPage() {
         <div className="empty">Одоогоор дэлгүүр байхгүй байна.</div>
       ) : (
         <ul className="list">
-          {shops.map((s) => (
+          {shops.map((s, i) => (
             <li key={s.slug}>
               <Link href={`/s/${s.slug}`} className="list-row">
                 {s.logoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={s.logoUrl} alt="" className="shop-logo sm" />
                 ) : (
-                  <span className="shop-logo sm letter">{s.name.slice(0, 1)}</span>
+                  <span className={`shop-logo sm letter tone-${i % 5}`}>{s.name.slice(0, 1)}</span>
                 )}
                 <span className="list-row-body">
                   <strong>{s.name}</strong>

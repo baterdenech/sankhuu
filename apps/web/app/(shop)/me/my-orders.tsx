@@ -27,10 +27,20 @@ export function MyOrders() {
     getMyOrders(saved.map((s) => ({ number: s.number, phone: s.phone }))).then(setRows);
   }, []);
 
-  if (rows === null) return <div className="empty">Уншиж байна…</div>;
+  if (rows === null)
+    return (
+      <div className="skeleton-page">
+        <div className="sk sk-banner" />
+        <div className="sk sk-line" />
+        <div className="sk sk-line short" />
+      </div>
+    );
   if (rows.length === 0)
     return (
       <div className="empty tall">
+        <span className="empty-icon">
+          <BoxIcon size={30} />
+        </span>
         <p>Энэ төхөөрөмжөөс өгсөн захиалга алга.</p>
         <p className="muted small-text">Захиалга өгөхөд энд түүх нь хадгалагдана.</p>
         <Link href="/" className="btn primary">
@@ -55,6 +65,7 @@ export function MyOrders() {
         ))}
       </section>
 
+      <h2 className="section-title">Захиалгууд</h2>
       <ul className="my-orders">
         {rows.map((o) => (
           <li key={o.number} className="cart-group">
