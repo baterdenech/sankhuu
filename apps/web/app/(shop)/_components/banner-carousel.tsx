@@ -48,6 +48,25 @@ export function BannerCarousel({ banners }: { banners: Banner[] }) {
       <span className="banner-counter">
         {i + 1} / {banners.length}
       </span>
+      {/* PC: Coupang маягийн босоо таб (утсан дээр CSS-ээр нуугдана) */}
+      <ul className="banner-tabs" aria-label="Баннерууд">
+        {banners.map((b, idx) => (
+          <li key={b.title}>
+            <button type="button" className={idx === i ? "on" : ""} onClick={() => ref.current?.scrollTo({ left: idx * ref.current.clientWidth, behavior: "smooth" })}>
+              <span className="banner-tab-text">
+                <em>{b.tag}</em>
+                <strong>{b.title}</strong>
+              </span>
+              {b.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={b.image} alt="" className="banner-tab-img" />
+              ) : (
+                <span className={`banner-tab-img banner ${b.cls}`} />
+              )}
+            </button>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
