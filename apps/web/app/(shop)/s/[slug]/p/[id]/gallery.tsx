@@ -26,6 +26,13 @@ export function Gallery({ images, alt, category }: { images: string[]; alt: stri
       </div>
       {list.length > 1 && (
         <>
+          {/* PC дээр: сум товч (CSS-ээр утсан дээр нуугдана) */}
+          <button type="button" className="gallery-arrow prev" aria-label="Өмнөх зураг" disabled={i === 0} onClick={() => ref.current?.scrollTo({ left: (i - 1) * ref.current.clientWidth, behavior: "smooth" })}>
+            ‹
+          </button>
+          <button type="button" className="gallery-arrow next" aria-label="Дараагийн зураг" disabled={i >= list.length - 1} onClick={() => ref.current?.scrollTo({ left: (i + 1) * ref.current.clientWidth, behavior: "smooth" })}>
+            ›
+          </button>
           <span className="pdp-counter">
             {i + 1} / {list.length}
           </span>
