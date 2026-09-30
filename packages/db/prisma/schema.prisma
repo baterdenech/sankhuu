@@ -16,6 +16,7 @@ enum Role {
   SELLER // Дэлгүүрийн эзэн / ажилтан
   DRIVER // Манай жолооч
   ADMIN // Sankhuu-гийн ажилтан (диспетчер)
+  BUYER // Худалдан авагч (захиалгын түүх, дуртай бараа); дэлгүүр нээвэл SELLER болно
 }
 
 // Нэвтрэлтийг Supabase Auth (утас + SMS код) хариуцна.
@@ -32,8 +33,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  shops  ShopMember[]
-  driver Driver?
+  shops     ShopMember[]
+  driver    Driver?
+  orders    Order[] // Нэвтэрсэн худалдан авагчийн захиалгууд
+  favorites Favorite[]
 }
 
 // ─── Дэлгүүр ─────────────────────────────────────────────────────────
@@ -101,6 +104,7 @@ model Product {
   shop       Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
   reviews    Review[]
+  favorites  Favorite[]
 
   @@unique([shopId, sku])
   @@index([shopId, isActive])
@@ -188,17 +192,34 @@ model Order {
   paymentMethod PaymentMethod @default(CASH_ON_DELIVERY)
   paymentStatus PaymentStatus @default(UNPAID)
   note          String?
+  userId        String? // Нэвтэрсэн худалдан авагчийн бүртгэл (бүртгэлгүй бол null)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   shop     Shop        @relation(fields: [shopId], references: [id])
   customer Customer    @relation(fields: [customerId], references: [id])
+  user     User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   items    OrderItem[]
   delivery Delivery?
   reviews  Review[]
 
   @@index([shopId, status])
   @@index([shopId, createdAt])
+  @@index([userId])
+}
+
+// Худалдан авагчийн дуртай бараа
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([productId])
 }
 
 model OrderItem {

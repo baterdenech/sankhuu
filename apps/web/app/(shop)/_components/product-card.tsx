@@ -3,6 +3,7 @@ import { ProductImage } from "./product-image";
 export { ProductImage };
 import { RocketIcon } from "./icons";
 import { arrivalLabel } from "./catalog-meta";
+import { HeartButton } from "./favorites";
 
 export type CardProduct = {
   id: string;
@@ -86,6 +87,7 @@ export function ProductCard({ p, showShop = true }: { p: CardProduct; showShop?:
         <ProductImage src={p.images[0]} alt={p.name} category={p.category} />
         {p.stock === 0 ? <span className="pcard-out">Дууссан</span> : isNew ? <span className="pcard-tag">Шинэ</span> : null}
         {pct > 0 && p.stock > 0 && <span className="pcard-off">-{pct}%</span>}
+        <HeartButton productId={p.id} size={18} className="pcard-heart" />
       </div>
       <div className="pcard-body">
         <div className="pcard-name">{p.name}</div>

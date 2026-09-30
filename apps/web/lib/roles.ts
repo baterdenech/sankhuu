@@ -31,6 +31,7 @@ export async function isAdmin(user: User) {
 export async function roleHome(user: User) {
   if (await isAdmin(user)) return "/admin";
   if (user.role === "DRIVER") return "/driver";
+  if (user.role === "BUYER") return "/me";
   return "/dashboard";
 }
 

@@ -3,13 +3,14 @@
 import { useActionState } from "react";
 import { registerWithPassword, type FormState } from "../actions";
 
-export function RegisterForm({ next }: { next: string }) {
+export function RegisterForm({ next, as }: { next: string; as?: string }) {
   const [state, action, pending] = useActionState<FormState, FormData>(registerWithPassword, {});
   const v = state.values ?? {};
 
   return (
     <form action={action} className="form">
       <input type="hidden" name="next" value={next} />
+      {as && <input type="hidden" name="as" value={as} />}
       <label htmlFor="username">Нэвтрэх нэр</label>
       <input id="username" name="username" defaultValue={v.username ?? ""} autoComplete="username" autoCapitalize="none" spellCheck={false} placeholder="жишээ: sarnai_butik" required autoFocus minLength={3} maxLength={20} />
       <label htmlFor="name">

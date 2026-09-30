@@ -123,7 +123,9 @@ export async function registerWithPassword(_prev: FormState, formData: FormData)
   if (!data.session) return fail("Бүртгэл үүссэн ч баталгаажуулалт шаардаж байна. Админд хандана уу.");
 
   const user = await ensureUser(data.user.id, { username, phone });
-  if (name && !user.name) await prisma.user.update({ where: { id: user.id }, data: { name } });
+  // as=buyer: худалдан авагчийн бүртгэл (дэлгүүр нээх шаардахгүй, /me руу орно)
+  const asBuyer = str(formData, "as") === "buyer";
+  if ((name && !user.name) || asBuyer) await prisma.user.update({ where: { id: user.id }, data: { ...(name && !user.name ? { name } : {}), ...(asBuyer ? { role: "BUYER" } : {}) } });
   redirect(safeNext(formData.get("next")));
 }
 
