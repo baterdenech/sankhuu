@@ -1,9 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { prisma } from "@sankhuu/db";
 import { requireDriver } from "@/lib/roles";
 import { completeDelivery, DeliveryError, failDelivery, pickUpDelivery, type Geo } from "@/lib/delivery";
+import { notifyOrder, type NotifyKind } from "@/lib/notify";
 
 export type DriverActionState = { error?: string };
 
@@ -16,9 +18,16 @@ function refresh() {
   revalidatePath("/deliveries");
 }
 
-async function run(fn: () => Promise<void>): Promise<DriverActionState> {
+// Амжилттай бол худалдан авагчид SMS (хариу явсны дараа)
+async function notifyDelivery(deliveryId: string, kind: NotifyKind, reason?: string) {
+  const d = await prisma.delivery.findUnique({ where: { id: deliveryId }, select: { orderId: true } });
+  if (d) after(() => notifyOrder(d.orderId, kind, { reason }));
+}
+
+async function run(fn: () => Promise<void>, notify?: () => Promise<void>): Promise<DriverActionState> {
   try {
     await fn();
+    await notify?.();
     refresh();
     return {};
   } catch (e) {
@@ -34,18 +43,18 @@ function cleanGeo(geo?: Geo): Geo {
 
 export async function pickUp(deliveryId: string, geo?: Geo) {
   const { user, driver } = await requireDriver();
-  return run(() => pickUpDelivery(deliveryId, driver.id, user.id, cleanGeo(geo)));
+  return run(() => pickUpDelivery(deliveryId, driver.id, user.id, cleanGeo(geo)), () => notifyDelivery(deliveryId, "IN_DELIVERY"));
 }
 
 export async function deliver(deliveryId: string, collected: number, geo?: Geo) {
   const { user, driver } = await requireDriver();
-  return run(() => completeDelivery(deliveryId, driver.id, user.id, Math.round(Number(collected)), cleanGeo(geo)));
+  return run(() => completeDelivery(deliveryId, driver.id, user.id, Math.round(Number(collected)), cleanGeo(geo)), () => notifyDelivery(deliveryId, "DELIVERED"));
 }
 
 export async function fail(deliveryId: string, reason: string, geo?: Geo) {
   const { user, driver } = await requireDriver();
   const r = String(reason ?? "").trim().slice(0, 200) || "Шалтгаан заагаагүй";
-  return run(() => failDelivery(deliveryId, driver.id, user.id, r, cleanGeo(geo)));
+  return run(() => failDelivery(deliveryId, driver.id, user.id, r, cleanGeo(geo)), () => notifyDelivery(deliveryId, "DELIVERY_FAILED", r));
 }
 
 export async function setOnline(online: boolean, geo?: Geo) {

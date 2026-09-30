@@ -357,3 +357,29 @@ model Settlement {
 
   @@index([shopId, status])
 }
+
+// ─── SMS мэдэгдэл ───────────────────────────────────────────────────
+// Илгээсэн/илгээх гэсэн мессеж бүрийг хадгална (туршилтын "log" горимд ч). Үйлчилгээ үзүүлэгч: apps/web/lib/sms
+
+enum SmsStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
+model SmsMessage {
+  id         String    @id @default(cuid())
+  to         String // E.164
+  text       String
+  kind       String // ORDER_PLACED, SELLER_NEW_ORDER, ORDER_CONFIRMED, IN_DELIVERY, DELIVERED, DELIVERY_FAILED, CANCELLED
+  orderId    String?
+  status     SmsStatus @default(QUEUED)
+  provider   String // log | http | …
+  providerId String?
+  error      String?
+  createdAt  DateTime  @default(now())
+  sentAt     DateTime?
+
+  @@index([createdAt])
+  @@index([orderId])
+}

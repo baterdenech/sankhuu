@@ -19,6 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/drivers">Жолооч</Link>
           <Link href="/admin/cash">Бэлэн мөнгө</Link>
           <Link href="/admin/settlements">Тооцоо</Link>
+          <Link href="/admin/sms">SMS</Link>
           {hasShop && <Link href="/dashboard">Миний дэлгүүр →</Link>}
         </nav>
         <div className="account">
