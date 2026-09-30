@@ -27,8 +27,22 @@ export const CATEGORY_COLORS: Record<string, string> = {
   Спорт: "#ccfbf1",
   Бусад: "#f1f5f9",
 };
+// Ангилал бүрийн дүрсний өнгө (пастель дэвсгэр дээр тод хувилбар нь)
+export const CATEGORY_INK: Record<string, string> = {
+  Хувцас: "#e11d48",
+  Гутал: "#0284c7",
+  "Цүнх, аксессуар": "#b45309",
+  "Гоо сайхан": "#db2777",
+  "Хүүхдийн бараа": "#16a34a",
+  "Гэр ахуй": "#7c3aed",
+  "Электрон бараа": "#4f46e5",
+  Хүнс: "#ea580c",
+  Спорт: "#0d9488",
+  Бусад: "#475569",
+};
 export function categoryStyle(category: string | null | undefined) {
-  return { background: CATEGORY_COLORS[category ?? "Бусад"] ?? CATEGORY_COLORS["Бусад"], icon: CATEGORY_ICONS[category ?? "Бусад"] ?? "🎁" };
+  const key = category && CATEGORY_COLORS[category] ? category : "Бусад";
+  return { background: CATEGORY_COLORS[key], color: CATEGORY_INK[key], icon: CATEGORY_ICONS[key] };
 }
 
 // Хүргэлтийн амлалт (картан дээр ногооноор харагдана). Бизнесийн нөхцөл өөрчлөгдвөл эндээс засна.

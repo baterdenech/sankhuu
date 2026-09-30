@@ -33,7 +33,15 @@ export default async function HomePage() {
     orderBy: { createdAt: "desc" },
     take: 40,
   });
-  const sold = await soldCounts(products.map((p) => p.id));
+  const [sold, shops] = await Promise.all([
+    soldCounts(products.map((p) => p.id)),
+    prisma.shop.findMany({
+      where: { isActive: true, products: { some: { isActive: true, stock: { gt: 0 } } } },
+      select: { slug: true, name: true, logoUrl: true },
+      orderBy: { createdAt: "desc" },
+      take: 12,
+    }),
+  ]);
   const deals = products.filter((p) => p.compareAtPrice && p.compareAtPrice > p.price).slice(0, 10);
   const popular = [...products].filter((p) => (sold.get(p.id) ?? 0) > 0).sort((a, b) => (sold.get(b.id) ?? 0) - (sold.get(a.id) ?? 0)).slice(0, 10);
   const topDeal = [...deals].sort((a, b) => b.compareAtPrice! / b.price - a.compareAtPrice! / a.price)[0];
@@ -85,13 +93,37 @@ export default async function HomePage() {
       <section className="cat-grid" aria-label="Ангилал">
         {ALL_CATEGORIES.map((c) => (
           <Link key={c} href={`/categories/${encodeURIComponent(c)}`} className="cat-item">
-            <span className="cat-icon" style={{ background: categoryStyle(c).background }}>
+            <span className="cat-icon" style={{ background: categoryStyle(c).background, color: categoryStyle(c).color }}>
               <CategoryIcon name={c} size={26} />
             </span>
             <span className="cat-label">{c}</span>
           </Link>
         ))}
       </section>
+
+      {shops.length > 0 && (
+        <section className="feed">
+          <div className="feed-head">
+            <h2 className="feed-title">Дэлгүүрүүд</h2>
+            <Link href="/shops" className="feed-more">
+              Бүгд ›
+            </Link>
+          </div>
+          <div className="hscroll shops-strip">
+            {shops.map((s, i) => (
+              <Link key={s.slug} href={`/s/${s.slug}`} className="shop-chip">
+                {s.logoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={s.logoUrl} alt="" className="shop-logo" />
+                ) : (
+                  <span className={`shop-logo letter tone-${i % 5}`}>{s.name.slice(0, 1)}</span>
+                )}
+                <span>{s.name}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {deals.length > 0 && (
         <section className="feed">

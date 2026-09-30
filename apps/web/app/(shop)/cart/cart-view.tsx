@@ -7,7 +7,7 @@ import { DISTRICTS } from "@/lib/districts";
 import { deliveryFeeFor } from "@/lib/delivery-fee";
 import { useCart } from "../_components/cart-store";
 import { ProductImage, RocketBadge } from "../_components/product-card";
-import { ChevronIcon } from "../_components/icons";
+import { CartIcon, ChevronIcon } from "../_components/icons";
 import { arrivalLabel } from "../_components/catalog-meta";
 import { placeOrder, type CheckoutState } from "./actions";
 
@@ -62,6 +62,9 @@ export function CartView() {
 
       {cart.items.length === 0 ? (
         <div className="empty tall">
+          <span className="empty-icon">
+            <CartIcon size={30} />
+          </span>
           <p>Сагс хоосон байна.</p>
           <Link href="/" className="btn primary">
             Бараа үзэх

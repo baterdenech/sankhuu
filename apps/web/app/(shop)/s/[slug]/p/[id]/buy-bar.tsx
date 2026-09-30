@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { formatMNT } from "@/lib/labels";
+import Link from "next/link";
 import { useCart, type CartItem } from "../../../../_components/cart-store";
-import { CheckIcon } from "../../../../_components/icons";
+import { CheckIcon, StoreIcon } from "../../../../_components/icons";
 
 // Coupang маяг: тоо ширхэг нь хуудасны дотор ("수량" мөр), доод мөрөнд зөвхөн 2 том товч:
 // "Сагсанд нэмэх" (цагаан, цэнхэр хүрээ) · "Шууд захиалах" (цэнхэр). Доод мөр fixed тул DOM-ын байрлал хамаагүй.
@@ -46,6 +47,10 @@ export function BuyBar({ item }: { item: Omit<CartItem, "qty"> }) {
         </p>
       )}
       <div className="buybar">
+        <Link href={`/s/${item.shopSlug}`} className="buybar-icon" aria-label="Дэлгүүр">
+          <StoreIcon size={22} />
+          <span>Дэлгүүр</span>
+        </Link>
         <button
           type="button"
           className="btn big outline"
