@@ -3,6 +3,8 @@ import { prisma, type Prisma } from "@sankhuu/db";
 import { ProductCard } from "../_components/product-card";
 import { ALL_CATEGORIES, categoryStyle, publicProductWhere, soldCounts } from "../_components/catalog";
 import { SearchBox } from "./search-box";
+import { AskBar } from "../_components/ask-bar";
+import { CategoryIcon } from "../_components/catalog-icons";
 
 export const metadata = { title: "Хайх · Sankhuu" };
 
@@ -59,18 +61,26 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     <>
       <SearchBox initial={q} />
       {!run && (
-        <section className="recent">
-          <div className="recent-head">
-            <span>Ангиллаар хайх</span>
-          </div>
-          <div className="chips">
-            {ALL_CATEGORIES.map((c) => (
-              <Link key={c} href={`/categories/${encodeURIComponent(c)}`} className="chip">
-                {categoryStyle(c).icon} {c}
-              </Link>
-            ))}
-          </div>
-        </section>
+        <>
+          <AskBar title="Юу хайж байгаагаа энгийнээр бичээрэй" text="«Найздаа төрсөн өдрийн бэлэг, 80 мянга хүртэл» — AI туслах олж өгнө" />
+          <section className="recent">
+            <div className="recent-head">
+              <span>Ангиллаар хайх</span>
+            </div>
+            <div className="chips">
+              {ALL_CATEGORIES.map((c) => (
+                <Link key={c} href={`/categories/${encodeURIComponent(c)}`} className="chip icon" style={{ ["--chip-bg" as string]: categoryStyle(c).background }}>
+                  <CategoryIcon name={c} size={16} /> {c}
+                </Link>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+      {run && products.length === 0 && (
+        <div className="pad">
+          <AskBar title="AI туслахаас асууж үзэх үү?" text={`«${title ?? q}» гэж хайхад олдсонгүй; өөрөөр тайлбарлаад асуугаарай`} prompt={q ? `${q} гэж хайгаад олдсонгүй. Үүнтэй төстэй эсвэл орлох бараа санал болгооч.` : undefined} />
+        </div>
       )}
       {run && (
         <>

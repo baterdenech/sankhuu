@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-export type Banner = { title: string; text: string; emoji: string; cls: string; href?: string };
+export type Banner = { title: string; text: string; cls: string; href?: string; image?: string | null; tag?: string };
 
-// Coupang маягийн баннер: гүйлгэхэд "1 / 3" тоолуур шинэчлэгдэнэ
+// Coupang маягийн баннер: зурагтай (байвал) + градиент давхарга, гүйлгэхэд "1 / 3" тоолуур шинэчлэгдэнэ
 export function BannerCarousel({ banners }: { banners: Banner[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const [i, setI] = useState(0);
@@ -22,21 +22,24 @@ export function BannerCarousel({ banners }: { banners: Banner[] }) {
         {banners.map((b) => {
           const inner = (
             <>
+              {b.image && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={b.image} alt="" className="banner-img" loading="eager" />
+              )}
               <span className="banner-text">
+                {b.tag && <em className="banner-tag">{b.tag}</em>}
                 <strong>{b.title}</strong>
                 <span>{b.text}</span>
               </span>
-              <span className="banner-emoji" aria-hidden>
-                {b.emoji}
-              </span>
             </>
           );
+          const cls = `banner ${b.cls}${b.image ? " has-img" : ""}`;
           return b.href ? (
-            <Link key={b.title} href={b.href} className={`banner ${b.cls}`}>
+            <Link key={b.title} href={b.href} className={cls}>
               {inner}
             </Link>
           ) : (
-            <div key={b.title} className={`banner ${b.cls}`}>
+            <div key={b.title} className={cls}>
               {inner}
             </div>
           );

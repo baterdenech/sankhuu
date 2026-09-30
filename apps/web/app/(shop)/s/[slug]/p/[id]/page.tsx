@@ -11,6 +11,7 @@ import { BuyBar } from "./buy-bar";
 import { Gallery } from "./gallery";
 import { PdpTabs } from "./pdp-tabs";
 import { ShareButton } from "../../../../_components/share-button";
+import { AskBar } from "../../../../_components/ask-bar";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -93,6 +94,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <div className="muted small-text">Бэлнээр эсвэл шилжүүлгээр, жолоочид</div>
             </div>
           </div>
+          <AskBar compact title="Энэ барааны тухай асуух" prompt="Энэ бараа надад тохирох уу? Товч хэлээд, сэтгэгдлүүдийг нь дүгнээд өгөөч." />
         </div>
 
         <div className="pdp-buy">

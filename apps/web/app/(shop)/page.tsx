@@ -2,10 +2,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@sankhuu/db";
 import { CartIcon, SearchIcon } from "./_components/icons";
+import { CategoryIcon, FlameIcon, ParcelIcon, SparkleIcon, StoreFrontIcon, TagIcon } from "./_components/catalog-icons";
 import { ProductCard } from "./_components/product-card";
-import { BannerCarousel } from "./_components/banner-carousel";
+import { BannerCarousel, type Banner } from "./_components/banner-carousel";
 import { CartBadge } from "./_components/cart-badge";
 import { Countdown } from "./_components/countdown";
+import { AskBar } from "./_components/ask-bar";
 import { ALL_CATEGORIES, categoryStyle, publicProductWhere, soldCounts } from "./_components/catalog";
 
 // Бараа DB-ээс ирдэг тул хүсэлт бүрт render хийнэ (build үед урьдчилж үүсгэхгүй)
@@ -16,18 +18,12 @@ export const metadata: Metadata = {
   description: "Дэлгүүрүүдийн барааг нэг дороос хайж, захиалаад хаалган дээрээ хүргүүлээрэй.",
 };
 
-const BANNERS = [
-  { title: "Хаалган дээр хүргэнэ", text: "Улаанбаатар хотод 5,000₮-с · 1-2 өдөрт", emoji: "🛵", cls: "b1" },
-  { title: "Үзээд, дараа нь төл", text: "Төлбөрийг бараагаа хүлээж авахдаа", emoji: "💸", cls: "b2" },
-  { title: "Дэлгүүрээ үнэгүй нээ", text: "Зургаа оруулахад AI бүртгэнэ", emoji: "✨", cls: "b3", href: "/login/register" },
-];
-
 const QUICK = [
-  { label: "Хямдрал", emoji: "🏷️", href: "/search?q=&sale=1" },
-  { label: "Шинэ", emoji: "🆕", href: "/search?q=&new=1" },
-  { label: "Эрэлттэй", emoji: "🔥", href: "/search?q=&hot=1" },
-  { label: "Дэлгүүрүүд", emoji: "🏬", href: "/shops" },
-  { label: "Захиалга", emoji: "📦", href: "/me" },
+  { label: "Хямдрал", Icon: TagIcon, href: "/search?q=&sale=1", cls: "q1" },
+  { label: "Шинэ", Icon: SparkleIcon, href: "/search?q=&new=1", cls: "q2" },
+  { label: "Эрэлттэй", Icon: FlameIcon, href: "/search?q=&hot=1", cls: "q3" },
+  { label: "Дэлгүүрүүд", Icon: StoreFrontIcon, href: "/shops", cls: "q4" },
+  { label: "Захиалга", Icon: ParcelIcon, href: "/me", cls: "q5" },
 ];
 
 export default async function HomePage() {
@@ -40,6 +36,17 @@ export default async function HomePage() {
   const sold = await soldCounts(products.map((p) => p.id));
   const deals = products.filter((p) => p.compareAtPrice && p.compareAtPrice > p.price).slice(0, 10);
   const popular = [...products].filter((p) => (sold.get(p.id) ?? 0) > 0).sort((a, b) => (sold.get(b.id) ?? 0) - (sold.get(a.id) ?? 0)).slice(0, 10);
+  const topDeal = [...deals].sort((a, b) => b.compareAtPrice! / b.price - a.compareAtPrice! / a.price)[0];
+  const hero = popular[0] ?? products[0];
+
+  const banners: Banner[] = [
+    { tag: "Хүргэлт", title: "Хаалган дээр хүргэнэ", text: "Улаанбаатар хотод 5,000₮-с · 15:00-с өмнө захиалбал маргааш", cls: "b1", image: hero?.images[0] },
+    ...(topDeal
+      ? [{ tag: `${Math.round((1 - topDeal.price / topDeal.compareAtPrice!) * 100)}% хямдрал`, title: topDeal.name, text: `${topDeal.price.toLocaleString("en-US")}₮ · ${topDeal.shop.name}`, cls: "b3", image: topDeal.images[0], href: `/s/${topDeal.shop.slug}/p/${topDeal.id}` }]
+      : []),
+    { tag: "Төлбөр", title: "Үзээд, дараа нь төл", text: "Төлбөрийг бараагаа хүлээж авахдаа жолоочид", cls: "b2" },
+    { tag: "Худалдагчид", title: "Дэлгүүрээ үнэгүй нээ", text: "Зургаа оруулахад AI нэр, тайлбарыг нь бичнэ", cls: "b4", href: "/login/register" },
+  ];
 
   return (
     <>
@@ -55,27 +62,31 @@ export default async function HomePage() {
           </Link>
         </div>
         <Link href="/search" className="search-box" aria-label="Бараа хайх">
+          <SearchIcon size={20} className="search-box-icon" />
           <span>Хайх бараагаа бичнэ үү</span>
-          <SearchIcon size={22} className="search-box-icon" />
         </Link>
       </header>
 
       <nav className="quick" aria-label="Түргэн цэс">
         {QUICK.map((q) => (
           <Link key={q.label} href={q.href} className="quick-item">
-            <span className="quick-icon">{q.emoji}</span>
+            <span className={`quick-icon ${q.cls}`}>
+              <q.Icon size={24} />
+            </span>
             <span>{q.label}</span>
           </Link>
         ))}
       </nav>
 
-      <BannerCarousel banners={BANNERS} />
+      <BannerCarousel banners={banners} />
+
+      <AskBar />
 
       <section className="cat-grid" aria-label="Ангилал">
         {ALL_CATEGORIES.map((c) => (
           <Link key={c} href={`/categories/${encodeURIComponent(c)}`} className="cat-item">
             <span className="cat-icon" style={{ background: categoryStyle(c).background }}>
-              {categoryStyle(c).icon}
+              <CategoryIcon name={c} size={26} />
             </span>
             <span className="cat-label">{c}</span>
           </Link>
