@@ -4,12 +4,14 @@ import { useTransition } from "react";
 import type { OrderStatus } from "@sankhuu/db";
 import { setOrderStatus } from "./actions";
 
-export function OrderActions({ id, status }: { id: string; status: OrderStatus }) {
+// Худалдагчийн үйлдлүүд. Жолооч оноогдсон бол хүргэлтийн шилжилтийг жолооч хийнэ (товч харагдахгүй).
+export function OrderActions({ id, status, driverName }: { id: string; status: OrderStatus; driverName?: string | null }) {
   const [pending, start] = useTransition();
   const go = (next: OrderStatus, confirmText?: string) => () => {
     if (confirmText && !window.confirm(confirmText)) return;
     start(() => setOrderStatus(id, next));
   };
+  const hasDriver = Boolean(driverName);
 
   if (status === "NEW")
     return (
@@ -36,9 +38,13 @@ export function OrderActions({ id, status }: { id: string; status: OrderStatus }
   if (status === "READY_FOR_PICKUP")
     return (
       <div className="order-actions">
-        <button className="btn primary" disabled={pending} onClick={go("IN_DELIVERY")}>
-          Хүргэлтэд гаргах
-        </button>
+        {hasDriver ? (
+          <span className="muted small-text">Жолооч {driverName} барааг авахаар ирнэ. Статусыг жолооч шинэчилнэ.</span>
+        ) : (
+          <button className="btn primary" disabled={pending} onClick={go("IN_DELIVERY")}>
+            Өөрөө хүргэлтэд гаргах
+          </button>
+        )}
         <button className="btn" disabled={pending} onClick={go("CANCELLED", "Захиалгыг цуцлах уу?")}>
           Цуцлах
         </button>
@@ -47,9 +53,13 @@ export function OrderActions({ id, status }: { id: string; status: OrderStatus }
   if (status === "IN_DELIVERY")
     return (
       <div className="order-actions">
-        <button className="btn primary" disabled={pending} onClick={go("DELIVERED", "Бараа хүргэгдэж, төлбөр төлөгдсөн үү?")}>
-          Хүргэгдсэн
-        </button>
+        {hasDriver ? (
+          <span className="muted small-text">Жолооч {driverName} хүргэж байна.</span>
+        ) : (
+          <button className="btn primary" disabled={pending} onClick={go("DELIVERED", "Бараа хүргэгдэж, төлбөр төлөгдсөн үү?")}>
+            Хүргэгдсэн
+          </button>
+        )}
       </div>
     );
   return null;

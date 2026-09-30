@@ -22,6 +22,8 @@ export async function setOrderStatus(orderId: string, next: OrderStatus) {
   await prisma.$transaction(async (tx) => {
     const order = await tx.order.findFirst({ where: { id: orderId, shopId: shop.id }, include: { items: true, delivery: true } });
     if (!order || !ALLOWED[order.status]?.includes(next)) return;
+    // Жолооч оноогдсон бол хүргэлтийн статусыг жолооч л өөрчилнө
+    if ((next === "IN_DELIVERY" || next === "DELIVERED") && order.delivery?.driverId) return;
 
     await tx.order.update({ where: { id: order.id }, data: { status: next, ...(next === "DELIVERED" ? { paymentStatus: "PAID" } : {}) } });
 

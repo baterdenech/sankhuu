@@ -1,0 +1,44 @@
+/* Жолоочийн апп: shop.css-ийн дизайны систем дээр нэмэлт */
+.driver .driver-top { display: flex; align-items: center; gap: 10px; }
+.driver .driver-top .topbar-title { flex: 1; font-size: 18px; }
+.online-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--canvas); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.online-toggle .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-3); }
+.online-toggle.on { background: #dcfce7; border-color: #86efac; color: #15803d; }
+.online-toggle.on .dot { background: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.2); }
+.driver-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 12px 16px 4px; }
+.driver-stats > div { display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 12px; background: var(--canvas); }
+.driver-stats strong { font-size: 18px; letter-spacing: -0.02em; }
+.driver-stats > div:last-child strong { font-size: 14px; }
+.dlist { list-style: none; margin: 0; padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.dcard { border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--card); }
+.dcard.dropoff { border-color: #bfdbfe; box-shadow: 0 4px 14px rgba(52,106,255,0.08); }
+.dcard-head { display: flex; align-items: center; gap: 8px; }
+.dcard-head strong { font-size: 15px; }
+.dcard-head .muted { margin-left: auto; }
+.dcard-tag { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+.tag-pickup { background: #fef3c7; color: #b45309; }
+.tag-drop { background: var(--blue-soft); color: var(--blue); }
+.dcard-place { display: flex; flex-direction: column; gap: 4px; }
+.dcard-who { display: flex; align-items: baseline; gap: 8px; font-size: 16px; }
+.dcard-addr { font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+.dcard-links { display: flex; gap: 8px; margin-top: 4px; }
+.dcard-links .btn { flex: 1; }
+.dcard-items { list-style: none; margin: 0; padding: 8px 0; border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); font-size: 13px; display: flex; flex-direction: column; gap: 3px; }
+.dcard-note { font-size: 13px; color: var(--ink-2); background: var(--canvas); padding: 8px 10px; border-radius: 8px; }
+.dcard-cod { font-size: 15px; }
+.dcard-cod strong { font-size: 18px; color: var(--green); }
+.dcard-actions { display: flex; gap: 8px; }
+.dcard-actions .btn { flex: 1; }
+.dcard-actions .btn.big { padding: 14px 8px; font-size: 15px; }
+.app .btn.danger { background: var(--red); border-color: var(--red); color: #fff; }
+.dcard-form { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; background: var(--canvas); }
+.dcard-form label { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.dcard-form input, .dcard-form select { font: inherit; font-size: 16px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--ink); width: 100%; }
+.hist-day { padding: 8px 0 0; }
+.hist-day-head { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 16px 4px; }
+.hist-status { font-size: 12px; font-weight: 700; text-align: right; flex: none; }
+.hist-status.d-DELIVERED { color: var(--green); }
+.hist-status.d-FAILED { color: var(--red); }
+.hist-status.d-RETURNED_TO_SHOP { color: var(--ink-3); }
+.cash-hero { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 28px 16px 20px; margin: 12px 16px 0; border-radius: 16px; background: linear-gradient(135deg, var(--blue-soft), #ede9fe); }
+.cash-hero strong { font-size: 32px; letter-spacing: -0.03em; }

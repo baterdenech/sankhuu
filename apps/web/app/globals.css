@@ -161,3 +161,32 @@ a.card:hover { border-color: var(--accent); }
 .tab.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
 .small a { color: var(--accent); text-decoration: underline; }
 
+
+/* Самбар: хүснэгт, диспетчер */
+.table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; font-size: 14px; }
+.table th, .table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.table th { font-size: 12px; font-weight: 600; color: var(--muted); background: var(--bg); }
+.table tr:last-child td { border-bottom: 0; }
+.table tr.off td { opacity: 0.5; }
+.table td a { color: var(--accent); }
+.row-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.row-actions form { display: inline; }
+.two-col { display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+.card.compact { padding: 10px 14px; }
+.card.compact .value { font-size: 18px; margin-top: 2px; }
+.notice { padding: 10px 14px; border-radius: 10px; background: #fef3c7; color: #92400e; font-size: 14px; }
+.notice a { text-decoration: underline; }
+.online { color: #15803d; font-weight: 600; }
+.delivery-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; font-size: 14px; }
+@media (max-width: 720px) { .delivery-cols { grid-template-columns: 1fr; } }
+.delivery-cols .label { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+.delivery-cols a { color: var(--accent); }
+.assign { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding-top: 8px; border-top: 1px dashed var(--border); }
+.assign select { font: inherit; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); min-width: 200px; }
+.status.d-PENDING { background: #fef3c7; color: #b45309; border-color: transparent; }
+.status.d-ASSIGNED { background: #dbeafe; color: #1d4ed8; border-color: transparent; }
+.status.d-PICKED_UP { background: #ede9fe; color: #6d28d9; border-color: transparent; }
+.status.d-DELIVERED { background: #dcfce7; color: #15803d; border-color: transparent; }
+.status.d-FAILED, .status.d-CANCELLED { background: #fee2e2; color: #b91c1c; border-color: transparent; }
+.status.d-RETURNED_TO_SHOP { background: var(--bg); color: var(--muted); }

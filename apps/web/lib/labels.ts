@@ -20,6 +20,18 @@ export const deliveryStatusLabel = {
   CANCELLED: "Цуцлагдсан",
 } as const;
 
+export const vehicleTypeLabel = {
+  CAR: "Машин",
+  MOTORBIKE: "Мотоцикл",
+  BICYCLE: "Дугуй",
+  ON_FOOT: "Явган",
+} as const;
+
+export const settlementStatusLabel = {
+  PENDING: "Хүлээгдэж буй",
+  PAID: "Төлсөн",
+} as const;
+
 export function formatMNT(amount: number) {
   return `${amount.toLocaleString("en-US")}₮`;
 }
